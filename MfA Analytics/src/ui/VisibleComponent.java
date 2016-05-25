@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 public abstract class VisibleComponent implements Visible {
 
-	Graphics2D g;
+	protected Graphics2D g;
 	private BufferedImage image;
 	private int x;
 	private int y;
