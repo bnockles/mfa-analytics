@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import dataStructures.AnalysisEquation;
 import ui.VisibleComponent;
 
-public class WeightVersusTimeGrid extends VisibleComponent implements MouseListener{
+public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotionListener{
 
 	
 	private static final int PIXEL_WIDTH = 500;
@@ -19,20 +19,33 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseListe
 	
 	
 	private ArrayList<Node> nodes;
-	
+        private ArrayList<Point> points;//the graph is stored as Points for each pixel
+        private boolean changeMade;
+	private boolean smoothCurve;
+
 	public WeightVersusTimeGrid(int x, int y, int width, int height) {
 		super(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
 		nodes = new ArrayList<Node>();
+                points = new ArrayList<Point>();
 		Node default1 = new Node(X_MIN, Y_MIN/2, this);
-		
+                changeMade = true;
+                smoothCurve = true;
+		update();
 	}
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
-
+		if(changeMade) updateGraph();
+                changeMade = false;
 	}
 
+
+
+        private void updateGraph(){
+               points = new ArrayList<Point>();
+               for(int i = 0; 
+               
+        }
 	/**
 	 * 
 	 * @return the X-coordinate of the y-axis within the FRAME
