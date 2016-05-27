@@ -25,7 +25,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private boolean smoothCurve;
 	private int waviness;//the length of the constructed "tangent" segment
 
-	public WeightVersusTimeGrid(int x, int y, int width, int height) {
+	public WeightVersusTimeGrid(int x, int y) {
 		super(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
 		nodes = new ArrayList<Node>();
 		points = new ArrayList<Point>();
@@ -44,22 +44,28 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 
 	private void updateGraph(){
-		
+
 		if(nodes.size()>2 && smoothCurve){
 			points = nodesTangentEndpointsAndMidpoints();
-			
-			for(int i = 0; i <  
+
+			//draw axes
+			g.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
+			g.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
+			//draw all points
+			for(Point p: points){
+				g.drawImage(p.getImage(), p.getX(), p.getY(), null);
+			}
 		}else{
 
 		}
 
 	}
 
-/**
- * 
- * @return An ArrayList of Points consisting of the notes with a segment constructed 
- * on each side approximating the tangent line and the midpoints between consecutive tangent lines
- */
+	/**
+	 * 
+	 * @return An ArrayList of Points consisting of the notes with a segment constructed 
+	 * on each side approximating the tangent line and the midpoints between consecutive tangent lines
+	 */
 	private ArrayList<Point> nodesTangentEndpointsAndMidpoints() {
 		points = new ArrayList<Point>();
 		for(int i = 0; i < nodes.size(); i++){
@@ -69,36 +75,88 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 				points.add(new Point(n.getxCoordinate() + waviness, 
 						n.getyCoordinate() + waviness * getSlope(n, nodes.get(i+1)), this));
 			}else if(i == nodes.size()-1){
-				points.add(new Point(n.getxCoordinate() - waviness, 
+				Point p = (new Point(n.getxCoordinate() - waviness, 
 						n.getyCoordinate() - waviness * getSlope(n, nodes.get(i-1)), this));
+				points.add(midpoint(points.get(i-1), p));
+				points.add(p);
 				points.add(n);
+			}else{
+				
+				Point tangentSegmentPoint1;
+				
+				Point tangentSegmentPoint2;
+
+				if(isRelativeExtrema(i)){
+					tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
+							n.getyCoordinate(), this);
+					tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
+							n.getyCoordinate(), this);
+				}else{
+					tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
+							n.getyCoordinate() - waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+					tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
+							n.getyCoordinate() + waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+				}
+				points.add(midpoint(points.get(i-1), tangentSegmentPoint1));
+				points.add(tangentSegmentPoint1);
+				points.add(n);
+				points.add(tangentSegmentPoint2);
 			}
-			
+
 		}
-		return null;
+		return points;
+	}
+
+	/**
+	 * 
+	 * @param node precondition 0 < node < node.size()-1
+	 * @return
+	 */
+	private boolean isRelativeExtrema(int node) {
+		double p = nodes.get(node-1).getyCoordinate();
+		double r = nodes.get(node+1).getyCoordinate();
+		double q = nodes.get(node).getyCoordinate();
+		if((p<q && r< q) || (p> q && r> q))return true;
+		else return false;
+	}
+
+	public Point midpoint(Point p, Point q) {
+		return new Point((p.getxCoordinate()+q.getxCoordinate())/2, (p.getxCoordinate()+q.getxCoordinate())/2, this); 
 	}
 
 	public static double getSlope(Point x1, Point x2){
 		return (x2.getyCoordinate()-x1.getyCoordinate())/(x2.getxCoordinate() - x1.getxCoordinate());
 	}
+
+
 	
 	//returns absolute X coordinate of Node relative to Frame
-	public int getAbsoluteX(int xCoordinate, int diameter){
+	public int getAbsoluteX(Point p){
+		return getAbsoluteX(p.getxCoordinate(), p.getDiameter());
+	}
+	
+	//returns absolute X coordinate of Node relative to Frame
+	public int getAbsoluteY(Point p){
+		return getAbsoluteY(p.getxCoordinate(), p.getDiameter());
+	}
+	
+	//returns absolute X coordinate of Node relative to Frame
+	public int getAbsoluteX(double xCoordinate, int diameter){
 		return (int) (getX() + getGridX(xCoordinate, diameter));
 	}
 
 	//returns absolute  Y coordinate of Node relative to Frame
-	public int getAbsolutetY(int yCoordinate, int diameter){
+	public int getAbsoluteY(double yCoordinate, int diameter){
 		return (int) (getY()+getGridY(yCoordinate, diameter));
 	}
 
 	//returns X coordinate of Point relative to this
-	public int getGridX(int xCoordinate, int diameter){
+	public int getGridX(double xCoordinate, int diameter){
 		return (int) (getYAxis()+xCoordinate*getXPixelScale())-diameter/2;
 	}
 
 	//returns  Y coordinate of Point relative to this
-	public int getGridY(int yCoordinate, int diameter){
+	public int getGridY(double yCoordinate, int diameter){
 		return (int) (getXAxis()-yCoordinate*getYPixelScale())-diameter/2;
 	}
 
@@ -173,8 +231,8 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		for(Node n: nodes){
-			if(e.getX()>n.getAbsoluteX() && e.getX() < n.getAbsoluteX()+Node.DIAMETER &&
-					e.getY()>n.getAbsolutetY() && e.getY() < n.getAbsolutetY()+Node.DIAMETER){
+			if(e.getX()>getAbsoluteX(n) && e.getX() < getAbsoluteX(n) + n.getDiameter() &&
+					e.getY()>getAbsoluteY(n) && e.getY() < getAbsoluteY(n)+n.getDiameter()){
 				n.setHovered(true);
 				n.update();
 			}else{

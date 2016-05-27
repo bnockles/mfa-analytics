@@ -19,20 +19,22 @@ public class Point extends VisibleComponent{
 	private WeightVersusTimeGrid grid;
 	
 	public Point(double x, double y, WeightVersusTimeGrid grid) {
-		super((int)(x*grid.getXPixelScale()), (int)(y*grid.getYPixelScale()), POINT_DIAMETER, POINT_DIAMETER);
+		super(grid.getGridX(x, POINT_DIAMETER), grid.getGridY(y, POINT_DIAMETER), POINT_DIAMETER, POINT_DIAMETER);
 		diameter = POINT_DIAMETER;
 		xCoordinate = x;
 		yCoordinate = y;
 		this.grid = grid;
+		draw();
 	}
 	
 	
-	public Point(int x, int y, int nodeDiameter, int diameter, WeightVersusTimeGrid grid) {
-		super((int)(x*grid.getXPixelScale()), (int)(y*grid.getYPixelScale()), diameter, diameter);
+	public Point(double x, double y, int nodeDiameter, int diameter, WeightVersusTimeGrid grid) {
+		super(grid.getGridX(x, POINT_DIAMETER), grid.getGridX(y, POINT_DIAMETER), diameter, diameter);
 		this.diameter = diameter;
 		xCoordinate = x;
 		yCoordinate = y;
 		this.grid = grid;
+		draw();
 	}
 
 
@@ -64,12 +66,16 @@ public class Point extends VisibleComponent{
 		//points do not ever change appearance
 	}
 
+	public int getDiameter() {
+		return diameter;
+	}
+
 /**
  * 
  * @param isHovered2 draws bright if hovered, dull otherwise
  */
 	private void draw() {
-		g.fillOval(0, 0, POINT_DIAMETER, POINT_DIAMETER);
+		g.fillOval(0, 0, diameter, diameter);
 	}
 
 	

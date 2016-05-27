@@ -16,7 +16,7 @@ public class Node extends Point{
 	private boolean isHovered;
 	
 	public Node(double x, double y, WeightVersusTimeGrid grid) {
-		super((int)(x*grid.getXPixelScale()), (int)(y*grid.getYPixelScale()), NODE_DIAMETER, NODE_DIAMETER, grid);
+		super(x, y, NODE_DIAMETER, NODE_DIAMETER, grid);
 		isHovered = false;
 	}
 	
