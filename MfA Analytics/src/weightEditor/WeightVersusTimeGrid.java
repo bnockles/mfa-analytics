@@ -23,6 +23,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private ArrayList<Point> points;//the graph is stored as Points for each pixel
 	private boolean changeMade;
 	private boolean smoothCurve;
+	private int waviness;//the length of the constructed "tangent" segment
 
 	public WeightVersusTimeGrid(int x, int y, int width, int height) {
 		super(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
@@ -43,8 +44,10 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 
 	private void updateGraph(){
-		points = new ArrayList<Point>();
+		
 		if(nodes.size()>2 && smoothCurve){
+			points = nodesTangentEndpointsAndMidpoints();
+			
 			for(int i = 0; i <  
 		}else{
 
@@ -52,7 +55,33 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	}
 
+/**
+ * 
+ * @return An ArrayList of Points consisting of the notes with a segment constructed 
+ * on each side approximating the tangent line and the midpoints between consecutive tangent lines
+ */
+	private ArrayList<Point> nodesTangentEndpointsAndMidpoints() {
+		points = new ArrayList<Point>();
+		for(int i = 0; i < nodes.size(); i++){
+			Node n = nodes.get(i);
+			if(i == 0){
+				points.add(n);
+				points.add(new Point(n.getxCoordinate() + waviness, 
+						n.getyCoordinate() + waviness * getSlope(n, nodes.get(i+1)), this));
+			}else if(i == nodes.size()-1){
+				points.add(new Point(n.getxCoordinate() - waviness, 
+						n.getyCoordinate() - waviness * getSlope(n, nodes.get(i-1)), this));
+				points.add(n);
+			}
+			
+		}
+		return null;
+	}
 
+	public static double getSlope(Point x1, Point x2){
+		return (x2.getyCoordinate()-x1.getyCoordinate())/(x2.getxCoordinate() - x1.getxCoordinate());
+	}
+	
 	//returns absolute X coordinate of Node relative to Frame
 	public int getAbsoluteX(int xCoordinate, int diameter){
 		return (int) (getX() + getGridX(xCoordinate, diameter));
