@@ -2,66 +2,93 @@ package weightEditor;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 import dataStructures.AnalysisEquation;
 import ui.VisibleComponent;
 
-public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotionListener{
+public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotionListener, MouseListener{
 
-	
+
 	private static final int PIXEL_WIDTH = 500;
 	private static final int PIXEL_HEIGHT = 400;
 	private static final double X_MIN = -60;//60 minutes early
 	private static final double X_MAX = 90;//90 minutes late
 	private static final double Y_MIN = AnalysisEquation.MIN_COEF;
 	private static final double Y_MAX = AnalysisEquation.MAX_COEF;
-	
-	
+
+
 	private ArrayList<Node> nodes;
-        private ArrayList<Point> points;//the graph is stored as Points for each pixel
-        private boolean changeMade;
+	private ArrayList<Point> points;//the graph is stored as Points for each pixel
+	private boolean changeMade;
 	private boolean smoothCurve;
 
 	public WeightVersusTimeGrid(int x, int y, int width, int height) {
 		super(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
 		nodes = new ArrayList<Node>();
-                points = new ArrayList<Point>();
+		points = new ArrayList<Point>();
 		Node default1 = new Node(X_MIN, Y_MIN/2, this);
-                changeMade = true;
-                smoothCurve = true;
+		changeMade = true;
+		smoothCurve = true;
 		update();
 	}
 
 	@Override
 	public void update() {
 		if(changeMade) updateGraph();
-                changeMade = false;
+		changeMade = false;
 	}
 
 
 
-        private void updateGraph(){
-               points = new ArrayList<Point>();
-               for(int i = 0; 
-               
-        }
+	private void updateGraph(){
+		points = new ArrayList<Point>();
+		if(nodes.size()>2 && smoothCurve){
+			for(int i = 0; i <  
+		}else{
+
+		}
+
+	}
+
+
+	//returns absolute X coordinate of Node relative to Frame
+	public int getAbsoluteX(int xCoordinate, int diameter){
+		return (int) (getX() + getGridX(xCoordinate, diameter));
+	}
+
+	//returns absolute  Y coordinate of Node relative to Frame
+	public int getAbsolutetY(int yCoordinate, int diameter){
+		return (int) (getY()+getGridY(yCoordinate, diameter));
+	}
+
+	//returns X coordinate of Point relative to this
+	public int getGridX(int xCoordinate, int diameter){
+		return (int) (getYAxis()+xCoordinate*getXPixelScale())-diameter/2;
+	}
+
+	//returns  Y coordinate of Point relative to this
+	public int getGridY(int yCoordinate, int diameter){
+		return (int) (getXAxis()-yCoordinate*getYPixelScale())-diameter/2;
+	}
+
 	/**
 	 * 
-	 * @return the X-coordinate of the y-axis within the FRAME
+	 * @return the X-coordinate of the y-axis within this
 	 */
 	public int getYAxis() {
-		return (int) (getX()-X_MIN*getXPixelScale());
+		return (int) (X_MIN*getXPixelScale());
 	}
-	
+
 	/**
 	 * 
-	 * @return the Y-coordinate of the x-axis within the FRAME
+	 * @return the Y-coordinate of the x-axis within this
 	 */
 	public int getXAxis() {
-		return (int) (getY()+Y_MAX*getYPixelScale());
+		return (int) (Y_MAX*getYPixelScale());
 	}
-	
+
 	/**
 	 * 
 	 * @return the number of pixels per x unit
@@ -69,8 +96,8 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	public double getXPixelScale(){
 		return PIXEL_WIDTH/(X_MAX-X_MIN);
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @return the number of pixels per x unit
@@ -82,11 +109,40 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
 		for(Node n: nodes){
 			if(e.getX()>n.getAbsoluteX() && e.getX() < n.getAbsoluteX()+Node.DIAMETER &&
 					e.getY()>n.getAbsolutetY() && e.getY() < n.getAbsolutetY()+Node.DIAMETER){
@@ -97,24 +153,6 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 				n.update();
 			}				
 		}
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
