@@ -9,6 +9,7 @@ public abstract class VisibleComponent implements Visible {
 	private BufferedImage image;
 	private int x;
 	private int y;
+	private boolean markedForUpdate;
 	
 	public VisibleComponent(int x, int y, int width, int height){
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -33,6 +34,15 @@ public abstract class VisibleComponent implements Visible {
 	public int getY() {
 		return y;
 	}
+	
+	
+	public void setX(int x) {
+		this.x =x;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
+	}
 
 	@Override
 	public void setXY(int x, int y) {
@@ -47,5 +57,13 @@ public abstract class VisibleComponent implements Visible {
 	
 	public int getHeight(){
 		return image.getHeight();
+	}
+	
+	public boolean markedForUpdate(){
+		return markedForUpdate;
+	}
+	
+	public void setMarkedForUpdate(boolean b){
+		markedForUpdate = b;
 	}
 }

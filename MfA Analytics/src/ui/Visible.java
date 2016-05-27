@@ -10,4 +10,6 @@ public interface Visible {
 	public void setXY(int x, int y);
 	public int getWidth();
 	public int getHeight();
+	public boolean markedForUpdate();
+	public void setMarkedForUpdate(boolean b);
 }

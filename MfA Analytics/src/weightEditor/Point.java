@@ -29,7 +29,7 @@ public class Point extends VisibleComponent{
 	
 	
 	public Point(double x, double y, int nodeDiameter, int diameter, WeightVersusTimeGrid grid) {
-		super(grid.getGridX(x, POINT_DIAMETER), grid.getGridX(y, POINT_DIAMETER), diameter, diameter);
+		super(grid.getGridX(x, POINT_DIAMETER), grid.getGridY(y, POINT_DIAMETER), diameter, diameter);
 		this.diameter = diameter;
 		xCoordinate = x;
 		yCoordinate = y;
@@ -48,6 +48,7 @@ public class Point extends VisibleComponent{
 
 	public void setxCoordinate(double xCoordinate) {
 		this.xCoordinate = xCoordinate;
+		setX(grid.getGridX(xCoordinate, diameter));
 	}
 
 
@@ -58,6 +59,7 @@ public class Point extends VisibleComponent{
 
 	public void setyCoordinate(double yCoordinate) {
 		this.yCoordinate = yCoordinate;
+		setY(grid.getGridY(yCoordinate, diameter));
 	}
 
 
@@ -74,7 +76,7 @@ public class Point extends VisibleComponent{
  * 
  * @param isHovered2 draws bright if hovered, dull otherwise
  */
-	private void draw() {
+	public void draw() {
 		g.fillOval(0, 0, diameter, diameter);
 	}
 

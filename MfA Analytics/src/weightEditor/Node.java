@@ -14,12 +14,14 @@ public class Node extends Point{
 	public static final Color HOVER_COLOR = new Color(150, 255,150);
 	public static final Color NON_HOVER_COLOR = new Color(50, 205,50);
 	private boolean isHovered;
-	
+	private boolean freezeX;
+
 	public Node(double x, double y, WeightVersusTimeGrid grid) {
 		super(x, y, NODE_DIAMETER, NODE_DIAMETER, grid);
 		isHovered = false;
+		freezeX = false;
 	}
-	
+
 
 
 	public boolean isHovered() {
@@ -29,25 +31,44 @@ public class Node extends Point{
 
 	public void setHovered(boolean isHovered) {
 		this.isHovered = isHovered;
+		setMarkedForUpdate(true);
 	}
 
 
 	@Override
 	public void update() {
-		draw(isHovered);
+		draw();
+		setMarkedForUpdate(false);
 	}
 
-/**
- * 
- * @param isHovered2 draws bright if hovered, dull otherwise
- */
-	private void draw(boolean hovered) {
-		if(hovered){
+	/**
+	 * 
+	 * @param isHovered2 draws bright if hovered, dull otherwise
+	 */
+	@Override
+	public void draw() {
+		if(isHovered){
 			g.setColor(HOVER_COLOR);
 		}else g.setColor(NON_HOVER_COLOR);
 		g.fillOval(0, 0, diameter, diameter);
+
 	}
 
+
+	public void setXYCoordinates(double x, double y){
+		if(!freezeX)setxCoordinate(x);
+		setyCoordinate(y);
+	}
 	
-	
+	/**
+	 * 
+	 * @param true if this node should not dlide along the x-axis
+	 */
+	public void freezeX(boolean b) {
+		freezeX = b;
+
+	}
+
+
+
 }

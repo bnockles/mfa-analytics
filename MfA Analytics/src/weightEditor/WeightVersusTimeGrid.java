@@ -1,5 +1,6 @@
 package weightEditor;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,17 +20,28 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private static final double Y_MAX = AnalysisEquation.MAX_COEF;
 
 
+	private Node selectedNode;
 	private ArrayList<Node> nodes;
 	private ArrayList<Point> points;//the graph is stored as Points for each pixel
 	private boolean changeMade;
 	private boolean smoothCurve;
 	private int waviness;//the length of the constructed "tangent" segment
 
+	//mouse coordinates to display when debugging. Delete later
+	int mx=0;
+	int my = 0;
+	
 	public WeightVersusTimeGrid(int x, int y) {
-		super(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
+		super(x, y, PIXEL_WIDTH, PIXEL_HEIGHT);
 		nodes = new ArrayList<Node>();
-		points = new ArrayList<Point>();
+		
 		Node default1 = new Node(X_MIN, Y_MIN/2, this);
+		Node default2 = new Node(X_MAX, Y_MAX/2, this);
+		default1.freezeX(true);
+		default2.freezeX(true);
+		
+		nodes.add(default1);
+		nodes.add(default2);
 		changeMade = true;
 		smoothCurve = true;
 		update();
@@ -37,30 +49,53 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	@Override
 	public void update() {
-		if(changeMade) updateGraph();
-		changeMade = false;
+		if(changeMade) {
+			updateGraph();
+			changeMade = false;
+		}else{
+			redrawNodes();
+		}
 	}
 
 
+
+	private void redrawNodes() {
+		// TODO Auto-generated method stub
+		for(Node n : nodes){
+			g.drawImage(n.getImage(), n.getX()-n.getDiameter()/2, n.getY()-n.getDiameter()/2, null);
+			g.setColor(Color.white);
+			g.fillRect(100, 60, 120, 60);
+			g.setColor(Color.black);
+			g.drawString("Mouse on "+mx+", "+my, 100, 80);
+			g.drawString("Node:("+getAbsoluteX(nodes.get(0))+","+getAbsoluteY(nodes.get(0))+")"+nodes.get(0).getyCoordinate(), 100,100);
+		}
+	}
 
 	private void updateGraph(){
 
+		//draw axes
+		g.setColor(Color.white);
+		g.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
+		g.setColor(Color.blue);
+		g.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
+		g.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
+		g.setColor(Color.black);
 		if(nodes.size()>2 && smoothCurve){
 			points = nodesTangentEndpointsAndMidpoints();
 
-			//draw axes
-			g.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
-			g.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
-			//draw all points
-			for(Point p: points){
-				g.drawImage(p.getImage(), p.getX(), p.getY(), null);
-			}
+			
 		}else{
-
+			points = new ArrayList<Point>();
+			points.addAll(nodes);
+			g.drawLine(nodes.get(0).getX(), nodes.get(0).getY(), nodes.get(1).getX(), nodes.get(1).getY());
+			
 		}
-
+		//draw all points
+		for(Point p: points){
+			g.drawImage(p.getImage(), p.getX()-p.getDiameter()/2, p.getY()-p.getDiameter()/2, null);
+		}
 	}
-
+	
 	/**
 	 * 
 	 * @return An ArrayList of Points consisting of the notes with a segment constructed 
@@ -137,7 +172,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	
 	//returns absolute X coordinate of Node relative to Frame
 	public int getAbsoluteY(Point p){
-		return getAbsoluteY(p.getxCoordinate(), p.getDiameter());
+		return getAbsoluteY(p.getyCoordinate(), p.getDiameter());
 	}
 	
 	//returns absolute X coordinate of Node relative to Frame
@@ -150,6 +185,14 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		return (int) (getY()+getGridY(yCoordinate, diameter));
 	}
 
+	private double locationToXCoordinate(int x) {
+		return (double)(x+Node.NODE_DIAMETER/2-getYAxis())/getXPixelScale();
+	}
+	
+	private double locationToYCoordinate(int y) {
+		return -(double)(y-getY()+Node.NODE_DIAMETER/2-getXAxis())/getYPixelScale();
+	}
+	
 	//returns X coordinate of Point relative to this
 	public int getGridX(double xCoordinate, int diameter){
 		return (int) (getYAxis()+xCoordinate*getXPixelScale())-diameter/2;
@@ -165,7 +208,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	 * @return the X-coordinate of the y-axis within this
 	 */
 	public int getYAxis() {
-		return (int) (X_MIN*getXPixelScale());
+		return (int) (-X_MIN*getXPixelScale());
 	}
 
 	/**
@@ -223,21 +266,37 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+	public void mouseDragged(MouseEvent e) {
+		if(selectedNode != null){
+			selectedNode.setXYCoordinates(locationToXCoordinate(e.getX()), locationToYCoordinate(e.getY()));
+			changeMade = true;
+		}
 	}
+
+
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		mx = e.getX();
+		my = e.getY();
+		update();
 		for(Node n: nodes){
-			if(e.getX()>getAbsoluteX(n) && e.getX() < getAbsoluteX(n) + n.getDiameter() &&
-					e.getY()>getAbsoluteY(n) && e.getY() < getAbsoluteY(n)+n.getDiameter()){
+			int d = n.getDiameter()/2;
+			if(e.getX()>getAbsoluteX(n)-d && e.getX() < getAbsoluteX(n) + 2*d &&
+					e.getY()>getAbsoluteY(n)-d && e.getY() < getAbsoluteY(n)+2*d){
 				n.setHovered(true);
+				selectedNode=n;
 				n.update();
+
+				setMarkedForUpdate(true);
 			}else{
-				n.setHovered(false);
-				n.update();
+				if(n.isHovered()){
+					n.setHovered(false);
+					selectedNode = null;
+					n.update();
+					setMarkedForUpdate(true);
+				}
+
 			}				
 		}
 	}
