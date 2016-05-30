@@ -62,12 +62,6 @@ public class Point extends VisibleComponent{
 		setY(grid.getGridY(yCoordinate, diameter));
 	}
 
-
-	@Override
-	public void update() {
-		//points do not ever change appearance
-	}
-
 	public int getDiameter() {
 		return diameter;
 	}

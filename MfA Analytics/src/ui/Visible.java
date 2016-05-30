@@ -12,4 +12,6 @@ public interface Visible {
 	public int getHeight();
 	public boolean markedForUpdate();
 	public void setMarkedForUpdate(boolean b);
+	public void draw();
+	public boolean isVisible();
 }

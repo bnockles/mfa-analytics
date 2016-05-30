@@ -34,13 +34,6 @@ public class Node extends Point{
 		setMarkedForUpdate(true);
 	}
 
-
-	@Override
-	public void update() {
-		draw();
-		setMarkedForUpdate(false);
-	}
-
 	/**
 	 * 
 	 * @param isHovered2 draws bright if hovered, dull otherwise

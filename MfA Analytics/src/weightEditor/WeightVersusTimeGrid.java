@@ -12,8 +12,8 @@ import ui.VisibleComponent;
 public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotionListener, MouseListener{
 
 
-	private static final int PIXEL_WIDTH = 500;
-	private static final int PIXEL_HEIGHT = 400;
+	public static final int PIXEL_WIDTH = 500;
+	public static final int PIXEL_HEIGHT = 400;
 	private static final double X_MIN = -60;//60 minutes early
 	private static final double X_MAX = 90;//90 minutes late
 	private static final double Y_MIN = AnalysisEquation.MIN_COEF;
@@ -23,51 +23,116 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private Node selectedNode;
 	private ArrayList<Node> nodes;
 	private ArrayList<Point> points;//the graph is stored as Points for each pixel
-	private boolean changeMade;
+	private boolean mouseReleased;
 	private boolean smoothCurve;
 	private int waviness;//the length of the constructed "tangent" segment
 
 	//mouse coordinates to display when debugging. Delete later
 	int mx=0;
 	int my = 0;
-	
+
 	public WeightVersusTimeGrid(int x, int y) {
 		super(x, y, PIXEL_WIDTH, PIXEL_HEIGHT);
 		nodes = new ArrayList<Node>();
-		
+
 		Node default1 = new Node(X_MIN, Y_MIN/2, this);
 		Node default2 = new Node(X_MAX, Y_MAX/2, this);
 		default1.freezeX(true);
 		default2.freezeX(true);
-		
+
 		nodes.add(default1);
 		nodes.add(default2);
-		changeMade = true;
+		mouseReleased = true;
 		smoothCurve = true;
 		update();
 	}
 
-	@Override
-	public void update() {
-		if(changeMade) {
-			updateGraph();
-			changeMade = false;
-		}else{
-			redrawNodes();
+	/**
+	 * 
+	 * @param time the number of minutes past 5:30 (or whatever is the set beginning of the event. the conversion is done elsewhere)
+	 * @return the double (between Y_MIN and Y_MAX) most suitable for this input
+	 */
+	public double calculateWeight(int time){
+		//linear approximation is made when time is out of bounds
+		if(time <= nodes.get(0).getxCoordinate())return inferredWeightBeyondMinMax(time);
+		else if(time >= nodes.get(nodes.size()-1).getxCoordinate())return inferredWeightBeyondMinMax(time);
+		//based on settings, linear or non-linear approximation is made when time is within bounds
+		else{
+			if(!smoothCurve){
+				return makeLinearApproximationWithinBounds(time);
+			}else{
+				try{
+					Point closestPoint = points.get(0);
+					double horizontalDistance = Math.abs(closestPoint.getxCoordinate()-time); 
+					for(Point p : points){
+						double horizontalDistance2 =  Math.abs(p.getxCoordinate()-time);
+						if(horizontalDistance2 < horizontalDistance){
+							horizontalDistance = horizontalDistance2;
+							closestPoint = p;
+						}
+					}
+					return closestPoint.getyCoordinate();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				return makeLinearApproximationWithinBounds(time);
+				
+			}
 		}
+	}
+
+	private double makeLinearApproximationWithinBounds(int time){
+		int i = 0;
+		while(!(time > nodes.get(i).getxCoordinate() && time < nodes.get(i+1).getxCoordinate()))i++;
+		return inferredWeightBetweenNodes(nodes.get(i), nodes.get(i+1), time);
+	}
+	
+	private double inferredWeightBetweenNodes(Node n1, Node n2, int time) {
+		double slope = getSlope(n1,n2);
+		return n1.getyCoordinate() + slope*(time-n1.getxCoordinate());
+	}
+
+	private double inferredWeightBeyondMinMax(int time) {	
+		//when t beyond max
+		Node n1= nodes.get(nodes.size()-2);
+		Node n2= nodes.get(nodes.size()-1);
+		Node start = n2;
+		//when t below min
+		if(time <= nodes.get(0).getxCoordinate()){
+			n1= nodes.get(0);
+			n2= nodes.get(1);
+			start = n1;
+		}
+		double slope = getSlope(n1,n2);
+		return start.getyCoordinate() + slope*(time-start.getxCoordinate());
+
+	}
+
+	@Override
+	public void draw() {
+//		if(markedForUpdate()) {
+			updateGraph();
+//		}else{
+			redrawNodes();
+//		}
 	}
 
 
 
 	private void redrawNodes() {
 		// TODO Auto-generated method stub
+//		boolean hoveredTextDrawn = false;
+		g.setColor(Color.white);
+		g.fillRect(100, 60, 120, 60);
 		for(Node n : nodes){
 			g.drawImage(n.getImage(), n.getX()-n.getDiameter()/2, n.getY()-n.getDiameter()/2, null);
-			g.setColor(Color.white);
-			g.fillRect(100, 60, 120, 60);
 			g.setColor(Color.black);
 			g.drawString("Mouse on "+mx+", "+my, 100, 80);
-			g.drawString("Node:("+getAbsoluteX(nodes.get(0))+","+getAbsoluteY(nodes.get(0))+")"+nodes.get(0).getyCoordinate(), 100,100);
+
+			if(n.isHovered() ){
+				g.drawString("Node:("+n.getxCoordinate()+","+n.getyCoordinate()+")", 100,100);
+			}
+
 		}
 	}
 
@@ -80,22 +145,28 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		g.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
 		g.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
 		g.setColor(Color.black);
-		if(nodes.size()>2 && smoothCurve){
+		if(nodes.size()>2 && smoothCurve && mouseReleased){
 			points = nodesTangentEndpointsAndMidpoints();
 
-			
+
 		}else{
 			points = new ArrayList<Point>();
 			points.addAll(nodes);
-			g.drawLine(nodes.get(0).getX(), nodes.get(0).getY(), nodes.get(1).getX(), nodes.get(1).getY());
-			
+			//draw lines connecting nodes
+			g.setColor(Color.black);
+			for(int i = 0; i < nodes.size()-1; i++){
+				g.drawLine(nodes.get(i).getX(), nodes.get(i).getY(), nodes.get(i+1).getX(), nodes.get(i+1).getY());
+
+				
+			}
+
 		}
 		//draw all points
 		for(Point p: points){
 			g.drawImage(p.getImage(), p.getX()-p.getDiameter()/2, p.getY()-p.getDiameter()/2, null);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return An ArrayList of Points consisting of the notes with a segment constructed 
@@ -116,9 +187,9 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 				points.add(p);
 				points.add(n);
 			}else{
-				
+
 				Point tangentSegmentPoint1;
-				
+
 				Point tangentSegmentPoint2;
 
 				if(isRelativeExtrema(i)){
@@ -155,8 +226,24 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		else return false;
 	}
 
+	public void addNode(){
+		double greatestDistance = 0;
+		int newIndex = 0;
+		for(int i = 0; i < nodes.size()-1; i++){
+			double distance = nodes.get(i+1).getxCoordinate() - nodes.get(i).getxCoordinate();
+			if(distance > greatestDistance){
+				greatestDistance = distance;
+				newIndex = i+1;
+				
+			}
+		}
+		Point midpoint = midpoint(nodes.get(newIndex-1), nodes.get(newIndex));
+		nodes.add(newIndex, new Node(midpoint.getxCoordinate(), midpoint.getyCoordinate(), this));
+		setMarkedForUpdate(true);
+	}
+	
 	public Point midpoint(Point p, Point q) {
-		return new Point((p.getxCoordinate()+q.getxCoordinate())/2, (p.getxCoordinate()+q.getxCoordinate())/2, this); 
+		return new Point((p.getxCoordinate()+q.getxCoordinate())/2, (p.getyCoordinate()+q.getyCoordinate())/2, this); 
 	}
 
 	public static double getSlope(Point x1, Point x2){
@@ -164,17 +251,17 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	}
 
 
-	
+
 	//returns absolute X coordinate of Node relative to Frame
 	public int getAbsoluteX(Point p){
 		return getAbsoluteX(p.getxCoordinate(), p.getDiameter());
 	}
-	
+
 	//returns absolute X coordinate of Node relative to Frame
 	public int getAbsoluteY(Point p){
 		return getAbsoluteY(p.getyCoordinate(), p.getDiameter());
 	}
-	
+
 	//returns absolute X coordinate of Node relative to Frame
 	public int getAbsoluteX(double xCoordinate, int diameter){
 		return (int) (getX() + getGridX(xCoordinate, diameter));
@@ -188,11 +275,11 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private double locationToXCoordinate(int x) {
 		return (double)(x+Node.NODE_DIAMETER/2-getYAxis())/getXPixelScale();
 	}
-	
+
 	private double locationToYCoordinate(int y) {
 		return -(double)(y-getY()+Node.NODE_DIAMETER/2-getXAxis())/getYPixelScale();
 	}
-	
+
 	//returns X coordinate of Point relative to this
 	public int getGridX(double xCoordinate, int diameter){
 		return (int) (getYAxis()+xCoordinate*getXPixelScale())-diameter/2;
@@ -261,15 +348,15 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
+		mouseReleased = true;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(selectedNode != null){
-			selectedNode.setXYCoordinates(locationToXCoordinate(e.getX()), locationToYCoordinate(e.getY()));
-			changeMade = true;
+			selectedNode.setXYCoordinates(locationToXCoordinate(e.getX()-getX()), locationToYCoordinate(e.getY()));
+			setMarkedForUpdate(true);
+			mouseReleased = false;
 		}
 	}
 
