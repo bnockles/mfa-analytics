@@ -64,16 +64,15 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 				return makeLinearApproximationWithinBounds(time);
 			}else{
 				try{
-					Point closestPoint = points.get(0);
-					double horizontalDistance = Math.abs(closestPoint.getxCoordinate()-time); 
-					for(Point p : points){
-						double horizontalDistance2 =  Math.abs(p.getxCoordinate()-time);
-						if(horizontalDistance2 < horizontalDistance){
-							horizontalDistance = horizontalDistance2;
-							closestPoint = p;
+					int i = 0 ;
+					if(time < points.get(i).getxCoordinate() || time > points.get(points.size()-1).getxCoordinate())return makeLinearApproximationWithinBounds(time);
+					else{
+						while(time<points.get(i).getxCoordinate() || time > points.get(i+1).getxCoordinate()){
+							i++;
 						}
+						double slope = getSlope(points.get(i), points.get(i+1));
+						return points.get(i).getyCoordinate()+slope*(time-points.get(i).getxCoordinate());
 					}
-					return closestPoint.getyCoordinate();
 				}catch(Exception e){
 					e.printStackTrace();
 				}
@@ -191,7 +190,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			for(int i = 0; i < iter.size(); i = i + 2){
 				fixed.add(iter.get(i));
 			}
-			
+
 			return smooth(nodesTangentEndpointsAndMidpoints(fixed), numberOfIterations+1);
 		}
 	}
@@ -202,64 +201,64 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	 * on each side approximating the tangent line and the midpoints between consecutive tangent lines
 	 */
 	private List<Point> nodesTangentEndpointsAndMidpoints(List<Point> nodes) {
-//		if(points.get(0).getX()>=points.get(1).getX())return points;
-//		else{
+		//		if(points.get(0).getX()>=points.get(1).getX())return points;
+		//		else{
 		List<Point> points = new ArrayList<Point>();
-			for(int i = 0; i < nodes.size(); i++){
+		for(int i = 0; i < nodes.size(); i++){
 
-				Point n = nodes.get(i);
-				if(i == 0){
-					points.add(n);
-					int out = getOut(n,nodes.get(i+1));
-					points.add(new Point(n.getxCoordinate() + out, 
-							n.getyCoordinate() + out * getSlope(n, nodes.get(i+1)), this));
-					System.out.println("Slope between zero and one is "+getSlope(n, nodes.get(i+1)));
-				}else if(i == nodes.size()-1){
-					int out = getOut(nodes.get(i-1), n);
-					Point p = (new Point(n.getxCoordinate() - out, 
-							n.getyCoordinate() - out * getSlope(nodes.get(i-1),n), this));
-					p.setColor(Color.red);
+			Point n = nodes.get(i);
+			if(i == 0){
+				points.add(n);
+				int out = getOut(n,nodes.get(i+1));
+				points.add(new Point(n.getxCoordinate() + out, 
+						n.getyCoordinate() + out * getSlope(n, nodes.get(i+1)), this));
+				System.out.println("Slope between zero and one is "+getSlope(n, nodes.get(i+1)));
+			}else if(i == nodes.size()-1){
+				int out = getOut(nodes.get(i-1), n);
+				Point p = (new Point(n.getxCoordinate() - out, 
+						n.getyCoordinate() - out * getSlope(nodes.get(i-1),n), this));
+				p.setColor(Color.red);
 
-					Point m1 = midpoint(points.get(points.size()-1), p);
-					m1.setColor(Color.green);
-					p.update();
-					m1.update();
-					points.add(m1);
-					points.add(p);
-					points.add(n);
+				Point m1 = midpoint(points.get(points.size()-1), p);
+				m1.setColor(Color.green);
+				p.update();
+				m1.update();
+				points.add(m1);
+				points.add(p);
+				points.add(n);
+			}else{
+
+				Point tangentSegmentPoint1;
+
+				Point tangentSegmentPoint2;
+
+				int out = getOut(nodes.get(i-1), n);
+				if(isRelativeExtrema(nodes, i)){
+					tangentSegmentPoint1 = new Point(n.getxCoordinate() - out, 
+							n.getyCoordinate(), this);
+					out = getOut(n,nodes.get(i+1));
+					tangentSegmentPoint2 = new Point(n.getxCoordinate() + out, 
+							n.getyCoordinate(), this);
 				}else{
-
-					Point tangentSegmentPoint1;
-
-					Point tangentSegmentPoint2;
-
-					int out = getOut(nodes.get(i-1), n);
-					if(isRelativeExtrema(nodes, i)){
-						tangentSegmentPoint1 = new Point(n.getxCoordinate() - out, 
-								n.getyCoordinate(), this);
-						out = getOut(n,nodes.get(i+1));
-						tangentSegmentPoint2 = new Point(n.getxCoordinate() + out, 
-								n.getyCoordinate(), this);
-					}else{
-						tangentSegmentPoint1 = new Point(n.getxCoordinate() - out, 
-								n.getyCoordinate() - out * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
-						out = getOut(n,nodes.get(i+1));
-						tangentSegmentPoint2 = new Point(n.getxCoordinate() + out, 
-								n.getyCoordinate() + out * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
-					}
-					tangentSegmentPoint1.setColor(Color.red);
-					tangentSegmentPoint2.setColor(Color.green);
-					tangentSegmentPoint1.update();
-					tangentSegmentPoint2.update();
-					points.add(midpoint(points.get(points.size()-1), tangentSegmentPoint1));
-					points.add(tangentSegmentPoint1);
-					points.add(n);
-					points.add(tangentSegmentPoint2);
+					tangentSegmentPoint1 = new Point(n.getxCoordinate() - out, 
+							n.getyCoordinate() - out * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+					out = getOut(n,nodes.get(i+1));
+					tangentSegmentPoint2 = new Point(n.getxCoordinate() + out, 
+							n.getyCoordinate() + out * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
 				}
-
+				tangentSegmentPoint1.setColor(Color.red);
+				tangentSegmentPoint2.setColor(Color.green);
+				tangentSegmentPoint1.update();
+				tangentSegmentPoint2.update();
+				points.add(midpoint(points.get(points.size()-1), tangentSegmentPoint1));
+				points.add(tangentSegmentPoint1);
+				points.add(n);
+				points.add(tangentSegmentPoint2);
 			}
-			return points;
-//		}
+
+		}
+		return points;
+		//		}
 	}
 
 	private int getOut(Point left, Point right){
@@ -269,7 +268,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		}
 		return out;
 	}
-	
+
 	/**
 	 * 
 	 * @param node precondition 0 < node < node.size()-1
@@ -300,6 +299,24 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		nodes.add(newIndex, n);
 		//		nodes.add(newIndex, new Node(0, 0, this));
 		setMarkedForUpdate(true);
+	}
+
+	public void removeNode(){
+		if(nodes.size()>2){
+			double leastDistance = nodes.get(nodes.size()-1).getxCoordinate()-nodes.get(0).getxCoordinate();
+			int newIndex = 1;
+			for(int i = 0; i < nodes.size()-2; i++){
+				double distance = nodes.get(i+2).getxCoordinate() - nodes.get(i).getxCoordinate();
+				if(distance < leastDistance){
+					leastDistance = distance;
+					newIndex = i+1;
+
+				}
+			}
+			nodes.remove(newIndex);
+			//		nodes.add(newIndex, new Node(0, 0, this));
+			setMarkedForUpdate(true);
+		}
 	}
 
 	public Point midpoint(Point p, Point q) {

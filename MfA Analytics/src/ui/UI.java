@@ -97,8 +97,18 @@ public class UI extends JFrame{
 			}
 			
 		});
+
+		Button removeNode = new Button("Remove Node", _GRID_X_MARGIN+ 80, GRID_BUTTON_Y, 80, 40, new Action(){
+
+			
+			@Override
+			public void act() {
+				grid.removeNode();
+			}
+			
+		});
 		
-		Button smoothCurve = new Button("Smooth", _GRID_X_MARGIN+ 80, GRID_BUTTON_Y, 80, 40, new Action(){
+		Button smoothCurve = new Button("Smooth", _GRID_X_MARGIN+ 160, GRID_BUTTON_Y, 80, 40, new Action(){
 
 			private boolean smooth = true;
 			
@@ -114,10 +124,12 @@ public class UI extends JFrame{
 		
 		display.add(updateRanks);
 		display.add(addNode);
+		display.add(removeNode);
 		display.add(smoothCurve);
 		
 		allButtons.add(updateRanks);
 		allButtons.add(addNode);
+		allButtons.add(removeNode);
 		allButtons.add(smoothCurve);
 		
 		addMouseListener(new ButtonListener(allButtons));
