@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import dataStructures.AnalysisEquation;
 import ui.VisibleComponent;
@@ -22,7 +23,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	private Node selectedNode;
 	private ArrayList<Node> nodes;
-	private ArrayList<Point> points;//the graph is stored as Points for each pixel
+	private List<Point> points;//the graph is stored as Points for each pixel
 	private boolean mouseReleased;
 	private boolean smoothCurve;
 	private int waviness;//the length of the constructed "tangent" segment
@@ -43,7 +44,8 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		nodes.add(default1);
 		nodes.add(default2);
 		mouseReleased = true;
-		smoothCurve = true;
+		smoothCurve = false;
+		waviness = 10;
 		update();
 	}
 
@@ -76,7 +78,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 					e.printStackTrace();
 				}
 				return makeLinearApproximationWithinBounds(time);
-				
+
 			}
 		}
 	}
@@ -86,7 +88,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		while(!(time > nodes.get(i).getxCoordinate() && time < nodes.get(i+1).getxCoordinate()))i++;
 		return inferredWeightBetweenNodes(nodes.get(i), nodes.get(i+1), time);
 	}
-	
+
 	private double inferredWeightBetweenNodes(Node n1, Node n2, int time) {
 		double slope = getSlope(n1,n2);
 		return n1.getyCoordinate() + slope*(time-n1.getxCoordinate());
@@ -110,22 +112,22 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	@Override
 	public void draw() {
-//		if(markedForUpdate()) {
-			updateGraph();
-//		}else{
-			redrawNodes();
-//		}
+		//		if(markedForUpdate()) {
+		updateGraph();
+		//		}else{
+		redrawNodes();
+		//		}
 	}
 
 
 
 	private void redrawNodes() {
 		// TODO Auto-generated method stub
-//		boolean hoveredTextDrawn = false;
+		//		boolean hoveredTextDrawn = false;
 		g.setColor(Color.white);
 		g.fillRect(100, 60, 120, 60);
 		for(Node n : nodes){
-			g.drawImage(n.getImage(), n.getX()-n.getDiameter()/2, n.getY()-n.getDiameter()/2, null);
+			//			g.drawImage(n.getImage(), n.getX()-n.getDiameter()/2, n.getY()-n.getDiameter()/2, null);
 			g.setColor(Color.black);
 			g.drawString("Mouse on "+mx+", "+my, 100, 80);
 
@@ -145,9 +147,19 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		g.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
 		g.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
 		g.setColor(Color.black);
+		System.out.println("nodes.size is "+nodes.size()+" , smooth curve is "+smoothCurve+", and mouseReleased is "+mouseReleased);
 		if(nodes.size()>2 && smoothCurve && mouseReleased){
-			points = nodesTangentEndpointsAndMidpoints();
+			List<Point> start = new ArrayList<Point>();
+			start.addAll(nodes);
+			points = nodesTangentEndpointsAndMidpoints(start);
+			points = smooth(points, 0);
+			for(int i = 0; i < points.size()-1; i++){
+				int d1 = points.get(i).getDiameter()/2;
+				int d2 = points.get(i+1).getDiameter()/2;
+				g.drawLine(points.get(i).getX()+d1, points.get(i).getY()+d1, points.get(i+1).getX()+d2, points.get(i+1).getY()+d2);
 
+
+			}
 
 		}else{
 			points = new ArrayList<Point>();
@@ -155,15 +167,36 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			//draw lines connecting nodes
 			g.setColor(Color.black);
 			for(int i = 0; i < nodes.size()-1; i++){
-				g.drawLine(nodes.get(i).getX(), nodes.get(i).getY(), nodes.get(i+1).getX(), nodes.get(i+1).getY());
+				int d = nodes.get(i).getDiameter()/2;
+				g.drawLine(nodes.get(i).getX()+d, nodes.get(i).getY()+d, nodes.get(i+1).getX()+d, nodes.get(i+1).getY()+d);
 
-				
+
 			}
 
 		}
 		//draw all points
 		for(Point p: points){
-			g.drawImage(p.getImage(), p.getX()-p.getDiameter()/2, p.getY()-p.getDiameter()/2, null);
+			g.drawImage(p.getImage(), p.getX(), p.getY(), null);
+		}
+		mouseReleased=true;
+	}
+
+	private List<Point> smooth(List<Point> iter, int numberOfIterations) {
+		System.out.println("smoothing "+iter.size()+" points");
+		if(numberOfIterations > 0)return iter;
+		else{
+			List<Point> fixed = new ArrayList<Point>();
+			for(int i = 0; i < iter.size(); i = i + 2){
+//				if(i >0){
+//					while(iter.get(i).getX()<iter.get(i-1).getX()){
+//						iter.get(i).setxCoordinate(iter.get(i).getxCoordinate()+1);
+//						iter.get(i-1).setxCoordinate(iter.get(i-1).getxCoordinate()-1);
+//					}
+//				}
+				fixed.add(iter.get(i));
+			}
+			
+			return smooth(nodesTangentEndpointsAndMidpoints(fixed), numberOfIterations+1);
 		}
 	}
 
@@ -172,45 +205,60 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	 * @return An ArrayList of Points consisting of the notes with a segment constructed 
 	 * on each side approximating the tangent line and the midpoints between consecutive tangent lines
 	 */
-	private ArrayList<Point> nodesTangentEndpointsAndMidpoints() {
-		points = new ArrayList<Point>();
-		for(int i = 0; i < nodes.size(); i++){
-			Node n = nodes.get(i);
-			if(i == 0){
-				points.add(n);
-				points.add(new Point(n.getxCoordinate() + waviness, 
-						n.getyCoordinate() + waviness * getSlope(n, nodes.get(i+1)), this));
-			}else if(i == nodes.size()-1){
-				Point p = (new Point(n.getxCoordinate() - waviness, 
-						n.getyCoordinate() - waviness * getSlope(n, nodes.get(i-1)), this));
-				points.add(midpoint(points.get(i-1), p));
-				points.add(p);
-				points.add(n);
-			}else{
+	private List<Point> nodesTangentEndpointsAndMidpoints(List<Point> nodes) {
+//		if(points.get(0).getX()>=points.get(1).getX())return points;
+//		else{
+		List<Point> points = new ArrayList<Point>();
+			for(int i = 0; i < nodes.size(); i++){
 
-				Point tangentSegmentPoint1;
+				Point n = nodes.get(i);
+				if(i == 0){
+					points.add(n);
+					points.add(new Point(n.getxCoordinate() + waviness, 
+							n.getyCoordinate() + waviness * getSlope(n, nodes.get(i+1)), this));
+					System.out.println("Slope between zero and one is "+getSlope(n, nodes.get(i+1)));
+				}else if(i == nodes.size()-1){
+					Point p = (new Point(n.getxCoordinate() - waviness, 
+							n.getyCoordinate() - waviness * getSlope(nodes.get(i-1),n), this));
+					p.setColor(Color.red);
 
-				Point tangentSegmentPoint2;
-
-				if(isRelativeExtrema(i)){
-					tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
-							n.getyCoordinate(), this);
-					tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
-							n.getyCoordinate(), this);
+					Point m1 = midpoint(points.get(points.size()-1), p);
+					m1.setColor(Color.green);
+					p.update();
+					m1.update();
+					points.add(m1);
+					points.add(p);
+					points.add(n);
 				}else{
-					tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
-							n.getyCoordinate() - waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
-					tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
-							n.getyCoordinate() + waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
-				}
-				points.add(midpoint(points.get(i-1), tangentSegmentPoint1));
-				points.add(tangentSegmentPoint1);
-				points.add(n);
-				points.add(tangentSegmentPoint2);
-			}
 
-		}
-		return points;
+					Point tangentSegmentPoint1;
+
+					Point tangentSegmentPoint2;
+
+					if(isRelativeExtrema(nodes, i)){
+						tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
+								n.getyCoordinate(), this);
+						tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
+								n.getyCoordinate(), this);
+					}else{
+						tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
+								n.getyCoordinate() - waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+						tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
+								n.getyCoordinate() + waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+					}
+					tangentSegmentPoint1.setColor(Color.red);
+					tangentSegmentPoint2.setColor(Color.green);
+					tangentSegmentPoint1.update();
+					tangentSegmentPoint2.update();
+					points.add(midpoint(points.get(points.size()-1), tangentSegmentPoint1));
+					points.add(tangentSegmentPoint1);
+					points.add(n);
+					points.add(tangentSegmentPoint2);
+				}
+
+			}
+			return points;
+//		}
 	}
 
 	/**
@@ -218,7 +266,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	 * @param node precondition 0 < node < node.size()-1
 	 * @return
 	 */
-	private boolean isRelativeExtrema(int node) {
+	private boolean isRelativeExtrema(List<Point> nodes, int node) {
 		double p = nodes.get(node-1).getyCoordinate();
 		double r = nodes.get(node+1).getyCoordinate();
 		double q = nodes.get(node).getyCoordinate();
@@ -234,16 +282,19 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			if(distance > greatestDistance){
 				greatestDistance = distance;
 				newIndex = i+1;
-				
+
 			}
 		}
 		Point midpoint = midpoint(nodes.get(newIndex-1), nodes.get(newIndex));
-		nodes.add(newIndex, new Node(midpoint.getxCoordinate(), midpoint.getyCoordinate(), this));
+		Node n =new Node(midpoint.getxCoordinate(), midpoint.getyCoordinate(), this);
+		n.update();
+		nodes.add(newIndex, n);
+		//		nodes.add(newIndex, new Node(0, 0, this));
 		setMarkedForUpdate(true);
 	}
-	
+
 	public Point midpoint(Point p, Point q) {
-		return new Point((p.getxCoordinate()+q.getxCoordinate())/2, (p.getyCoordinate()+q.getyCoordinate())/2, this); 
+		return new Point((p.getxCoordinate()+q.getxCoordinate())/2.0, (p.getyCoordinate()+q.getyCoordinate())/2.0, this); 
 	}
 
 	public static double getSlope(Point x1, Point x2){
@@ -386,6 +437,12 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 			}				
 		}
+	}
+
+	public void setSmooth(boolean b) {
+		smoothCurve = b;
+		setMarkedForUpdate(true);
+
 	}
 
 }

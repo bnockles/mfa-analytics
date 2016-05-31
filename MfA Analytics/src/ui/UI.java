@@ -33,15 +33,16 @@ public class UI extends JFrame{
 	private Button updateRanks;
 	private ArrayList<Button> allButtons;
 	
-	private static final int _GRID_MARGIN = 100;
+	private static final int _GRID_X_MARGIN = 100;
+	private static final int _GRID_Y_MARGIN = 70;
 	private static final int _VIEWER_MARGIN = 100 + WeightVersusTimeGrid.PIXEL_WIDTH+SPACING;
 	
 	public UI(){
 		applySettings();//display the JFrame the way I want it
 		display = new ArrayList<Visible>();
 		
-		grid = new WeightVersusTimeGrid(_GRID_MARGIN, 70);
-		equation = new AnalysisEquation(_GRID_MARGIN, WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
+		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN, _GRID_Y_MARGIN);
+		equation = new AnalysisEquation(_GRID_X_MARGIN, WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
 		viewer = new RecordViewer(_VIEWER_MARGIN, 200);
 		addButtons();
 		
@@ -60,6 +61,7 @@ public class UI extends JFrame{
 				boolean update = false;;
 				for(Visible v: display){
 					if(v.markedForUpdate()){
+						v.update();
 						update = true;
 						break;
 					}
@@ -86,7 +88,8 @@ public class UI extends JFrame{
 				viewer.recalculate(equation);
 			}
 		} );
-		Button addNode = new Button("Add Node", _VIEWER_MARGIN+ 80, 80, 120, 40, new Action(){
+		int GRID_BUTTON_Y=_GRID_Y_MARGIN-50;
+		Button addNode = new Button("Add Node", _GRID_X_MARGIN, GRID_BUTTON_Y, 80, 40, new Action(){
 
 			@Override
 			public void act() {
@@ -95,12 +98,27 @@ public class UI extends JFrame{
 			
 		});
 		
+		Button smoothCurve = new Button("Smooth", _GRID_X_MARGIN+ 80, GRID_BUTTON_Y, 80, 40, new Action(){
+
+			private boolean smooth = true;
+			
+			@Override
+			public void act() {
+				grid.setSmooth(smooth);
+				smooth = !smooth;
+			}
+			
+		});
+		
+		
 		
 		display.add(updateRanks);
 		display.add(addNode);
+		display.add(smoothCurve);
 		
 		allButtons.add(updateRanks);
 		allButtons.add(addNode);
+		allButtons.add(smoothCurve);
 		
 		addMouseListener(new ButtonListener(allButtons));
 	}
@@ -119,7 +137,7 @@ public class UI extends JFrame{
 		Graphics2D g2 = image.createGraphics();
 		for(Visible v: display){
 //			if(v.markedForUpdate()){
-				v.update();
+//				v.update();
 				g2.drawImage(v.getImage(), v.getX(), v.getY(), null);	
 //			}
 		}

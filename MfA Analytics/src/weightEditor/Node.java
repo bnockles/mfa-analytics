@@ -17,7 +17,7 @@ public class Node extends Point{
 	private boolean freezeX;
 
 	public Node(double x, double y, WeightVersusTimeGrid grid) {
-		super(x, y, NODE_DIAMETER, NODE_DIAMETER, grid);
+		super(x, y, NODE_DIAMETER, grid);
 		isHovered = false;
 		freezeX = false;
 	}
