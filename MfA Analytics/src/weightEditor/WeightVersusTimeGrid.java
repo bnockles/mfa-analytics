@@ -175,7 +175,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 		}
 		//draw all points
-		for(Point p: points){
+		for(Point p: nodes){
 			g.drawImage(p.getImage(), p.getX(), p.getY(), null);
 		}
 		mouseReleased=true;
@@ -183,16 +183,12 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	private List<Point> smooth(List<Point> iter, int numberOfIterations) {
 		System.out.println("smoothing "+iter.size()+" points");
-		if(numberOfIterations > 0)return iter;
+		if(numberOfIterations > 3){
+			return iter;
+		}
 		else{
 			List<Point> fixed = new ArrayList<Point>();
 			for(int i = 0; i < iter.size(); i = i + 2){
-//				if(i >0){
-//					while(iter.get(i).getX()<iter.get(i-1).getX()){
-//						iter.get(i).setxCoordinate(iter.get(i).getxCoordinate()+1);
-//						iter.get(i-1).setxCoordinate(iter.get(i-1).getxCoordinate()-1);
-//					}
-//				}
 				fixed.add(iter.get(i));
 			}
 			
@@ -214,12 +210,14 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 				Point n = nodes.get(i);
 				if(i == 0){
 					points.add(n);
-					points.add(new Point(n.getxCoordinate() + waviness, 
-							n.getyCoordinate() + waviness * getSlope(n, nodes.get(i+1)), this));
+					int out = getOut(n,nodes.get(i+1));
+					points.add(new Point(n.getxCoordinate() + out, 
+							n.getyCoordinate() + out * getSlope(n, nodes.get(i+1)), this));
 					System.out.println("Slope between zero and one is "+getSlope(n, nodes.get(i+1)));
 				}else if(i == nodes.size()-1){
-					Point p = (new Point(n.getxCoordinate() - waviness, 
-							n.getyCoordinate() - waviness * getSlope(nodes.get(i-1),n), this));
+					int out = getOut(nodes.get(i-1), n);
+					Point p = (new Point(n.getxCoordinate() - out, 
+							n.getyCoordinate() - out * getSlope(nodes.get(i-1),n), this));
 					p.setColor(Color.red);
 
 					Point m1 = midpoint(points.get(points.size()-1), p);
@@ -235,16 +233,19 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 					Point tangentSegmentPoint2;
 
+					int out = getOut(nodes.get(i-1), n);
 					if(isRelativeExtrema(nodes, i)){
-						tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
+						tangentSegmentPoint1 = new Point(n.getxCoordinate() - out, 
 								n.getyCoordinate(), this);
-						tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
+						out = getOut(n,nodes.get(i+1));
+						tangentSegmentPoint2 = new Point(n.getxCoordinate() + out, 
 								n.getyCoordinate(), this);
 					}else{
-						tangentSegmentPoint1 = new Point(n.getxCoordinate() - waviness, 
-								n.getyCoordinate() - waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
-						tangentSegmentPoint2 = new Point(n.getxCoordinate() + waviness, 
-								n.getyCoordinate() + waviness * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+						tangentSegmentPoint1 = new Point(n.getxCoordinate() - out, 
+								n.getyCoordinate() - out * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
+						out = getOut(n,nodes.get(i+1));
+						tangentSegmentPoint2 = new Point(n.getxCoordinate() + out, 
+								n.getyCoordinate() + out * getSlope(nodes.get(i-1), nodes.get(i+1)), this);
 					}
 					tangentSegmentPoint1.setColor(Color.red);
 					tangentSegmentPoint2.setColor(Color.green);
@@ -261,6 +262,14 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 //		}
 	}
 
+	private int getOut(Point left, Point right){
+		int out = waviness;
+		while(left.getxCoordinate() + out >= right.getxCoordinate()-out){
+			out--;
+		}
+		return out;
+	}
+	
 	/**
 	 * 
 	 * @param node precondition 0 < node < node.size()-1
