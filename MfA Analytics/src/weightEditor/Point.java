@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import ui.VisibleComponent;
 
-public class Point extends VisibleComponent{
+public class Point extends VisibleComponent implements Comparable<Point>{
 
 
 
@@ -81,6 +81,12 @@ public class Point extends VisibleComponent{
 		g.setColor(color);
 		g.fillOval(0, 0, diameter, diameter);
 	}
+
+
+@Override
+public int compareTo(Point o) {
+	return (int)(o.getxCoordinate()-this.getxCoordinate());
+}
 
 	
 	
