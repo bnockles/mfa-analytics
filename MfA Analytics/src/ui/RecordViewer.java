@@ -137,11 +137,11 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 
 		if(mx > 0 && mx < VIEWER_WIDTH && my > 0 && my < VIEWER_HEIGHT){
 			int itemNumber = my/LABEL_SPACE;
-			if(viewing == TEACHERS_VIEW){
+			if(viewing == TEACHERS_VIEW && teachers != null){
 				if(teachers.size() < startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
 				else return teachers.get(startIndex + itemNumber);
 			}
-			if(viewing == PDS_VIEW){
+			if(viewing == PDS_VIEW && pds != null){
 				if(pds.size() < startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
 				else return pds.get(startIndex + itemNumber);
 			}else return null;

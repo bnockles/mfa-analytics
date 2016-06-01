@@ -1,9 +1,13 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Button extends VisibleComponent {
 
@@ -29,7 +33,9 @@ public class Button extends VisibleComponent {
 		g.setColor(background);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.black);
-	
+		g.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 5, 5);
+		g.setFont(baseFont);
+		
 		GuiUtilities.centerText(g, text, getWidth(), getHeight() - 5);
 	}
 

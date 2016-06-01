@@ -2,8 +2,11 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 public abstract class VisibleComponent implements Visible {
 
@@ -21,7 +24,15 @@ public abstract class VisibleComponent implements Visible {
 	public VisibleComponent(int x, int y, int width, int height){
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		g = (Graphics2D)image.createGraphics();
-		baseFont = new Font("Avenir",Font.PLAIN,14);
+		InputStream is = VisibleComponent.class.getResourceAsStream("/AdventPro-Medium.ttf");
+		try {
+			Font font= Font.createFont(Font.TRUETYPE_FONT, is);
+			baseFont=font.deriveFont(18f);
+		} catch (Exception e) {
+			baseFont = new Font("Avenir",Font.PLAIN,14);
+			e.printStackTrace();
+		}
+		
 		g.setFont(baseFont);
 		this.x = x;
 		this.y = y;

@@ -14,22 +14,30 @@ public class SliderComponent extends VisibleComponent implements MouseMotionList
 	public static final int SLIDERS_WIDTH = 200;
 	public static final int SLIDERS_HEIGHT = WeightVersusTimeGrid.PIXEL_HEIGHT;
 	
+	private VerticalSlider latenessWeight;
 	private VerticalSlider attendanceWeight;
-	private AnalysisEquation equation;
+
 	List<VerticalSlider> display;
 	
 	public SliderComponent(int x, int y, final AnalysisEquation equation) {
 		super(x,y,SLIDERS_WIDTH, SLIDERS_HEIGHT);
-		this.equation = equation;
-		attendanceWeight = new VerticalSlider("Absences",3, 3, 80, SLIDERS_HEIGHT-6, new Action() {
+		attendanceWeight = new VerticalSlider("Absences",3, 3, SLIDERS_HEIGHT-6, new Action() {
 			
 			@Override
 			public void act() {
 				equation.setAbsenceCoef(attendanceWeight.getValue());
 			}
 		});
+		latenessWeight = new VerticalSlider("Latenesses",3+VerticalSlider.SLIDER_WIDTH, 3, SLIDERS_HEIGHT-6, new Action() {
+			
+			@Override
+			public void act() {
+				equation.setPercentageLateCoef(latenessWeight.getValue());
+			}
+		});
 		display = new ArrayList<VerticalSlider>();
 		display.add(attendanceWeight);
+		display.add(latenessWeight);
 		update();
 	}
 

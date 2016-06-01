@@ -1,6 +1,8 @@
 package ui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Stroke;
 
 import dataStructures.PD;
 import dataStructures.Teacher;
@@ -14,14 +16,14 @@ public class InfoBox extends VisibleComponent {
 	private static final int y1=25;
 	private static final int y2=y1 + LINE_HEIGHT;
 
-	private static final int x1=5;
+	private static final int x1=10;
 	private static final int x2=INFO_BOX_WIDTH/2;
 
 	private ViewerLabel info;
 
 	public InfoBox(int x, int y) {
 		super(x, y, INFO_BOX_WIDTH, INFO_BOX_HEIGHT);
-		backGroundColor = new Color(240,240,255);
+		backGroundColor = new Color(255,255,255);
 		foreGroundColor = (Color.black);
 		update();
 	}
@@ -42,6 +44,13 @@ public class InfoBox extends VisibleComponent {
 			
 		}
 		if(info != null){
+			Stroke currentStroke = g.getStroke();
+			g.setColor(new Color(100,150,255));
+			BasicStroke s = new BasicStroke(3);
+			g.setStroke(s);
+			g.drawRoundRect(5, 5, getWidth()-10, 100, 5, 5);
+			g.setColor(foreGroundColor);
+			g.setStroke(currentStroke);
 			g.drawString("Late "+info.getLatePercentage()+"% of time", x1, y2);
 			g.drawString("Absent "+info.getAbsentPercentage()+"% of time", x2, y2);
 			

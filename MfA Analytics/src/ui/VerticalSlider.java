@@ -18,22 +18,24 @@ public class VerticalSlider extends VisibleComponent{
 
 	public static final int TOP_MARGIN = 20;
 	public static final int BOTTOM_MARGIN = 10;
+	public static final int SLIDER_WIDTH = 60;
+	
 	
 	private int _Y_MAX;
 	private int _Y_MIN;
 	private int _LENGTH;
-
 
 	private static final int _SLIDER_HEIGHT = 20;
 	private static final Color _SLOT_COLOR = new Color(120,120,120);
 	private static final Color _SLIDER_COLOR = new Color(200,200,200);
 
 
-	public VerticalSlider(String name, int x, int y, int width, int height,Action action) {
-		super(x,y,width,height);
+	public VerticalSlider(String name, int x, int y, int height,Action action) {
+		super(x,y,SLIDER_WIDTH,height);
 		this.action = action;
 		this.name = name;
-		baseFont =new Font("Avenir",Font.PLAIN,10);
+		baseFont =baseFont.deriveFont(12f);
+		g.setFont(baseFont);
 		value = 0.0;
 		max = 1.0;
 		min = -1.0;
@@ -68,7 +70,7 @@ public class VerticalSlider extends VisibleComponent{
 
 		g.setColor(_SLIDER_COLOR);
 		int spaceFromEdge = 5;
-		g.fillRoundRect(spaceFromEdge, getSliderCoordinate(), getWidth()-2*spaceFromEdge, _SLIDER_HEIGHT, 5, 5);
+		g.fillRoundRect(spaceFromEdge, getSliderCoordinate(), getWidth()-2*spaceFromEdge-1, _SLIDER_HEIGHT-1, 5, 5);
 		g.setColor(foreGroundColor);
 	}
 
@@ -92,6 +94,7 @@ public class VerticalSlider extends VisibleComponent{
 			dragging = true;
 			value = getSliderValue(ry);
 			update();
+			action.act();
 			setMarkedForUpdate(true);
 		}
 	}
