@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -15,10 +16,13 @@ public abstract class VisibleComponent implements Visible {
 	protected BufferedImage image;
 	protected Color backGroundColor;
 	protected Color foreGroundColor;
+	protected Font baseFont;
 	
 	public VisibleComponent(int x, int y, int width, int height){
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		g = (Graphics2D)image.createGraphics();
+		baseFont = new Font("Avenir",Font.PLAIN,14);
+		g.setFont(baseFont);
 		this.x = x;
 		this.y = y;
 		visible = true;

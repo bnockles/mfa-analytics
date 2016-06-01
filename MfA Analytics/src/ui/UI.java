@@ -28,6 +28,7 @@ public class UI extends JFrame{
 	private WeightVersusTimeGrid grid;
 	private AnalysisEquation equation;
 	private RecordViewer viewer;
+	private SliderComponent sliders;
 	private ArrayList<Visible> display;
 	private BufferedImage image;
 	private Button updateRanks;
@@ -43,6 +44,7 @@ public class UI extends JFrame{
 		
 		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN, _GRID_Y_MARGIN);
 		equation = new AnalysisEquation(_GRID_X_MARGIN, WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
+		sliders = new SliderComponent(0, _GRID_Y_MARGIN, equation);
 		viewer = new RecordViewer(_VIEWER_MARGIN, 200);
 		addButtons();
 		
@@ -50,10 +52,13 @@ public class UI extends JFrame{
 		display.add(grid);
 		display.add(equation);
 		display.add(viewer);
+		display.add(sliders);
 		
 		
 		addMouseMotionListener(grid);
+		addMouseListener(grid);
 		addMouseMotionListener(viewer);
+		addMouseMotionListener(sliders);
 		
 		Timer timer = new Timer(30, new ActionListener() {
 
@@ -63,7 +68,7 @@ public class UI extends JFrame{
 					if(v.markedForUpdate()){
 						v.update();
 						update = true;
-						break;
+//						break;
 					}
 				}
 				if(update)UI.this.repaint();

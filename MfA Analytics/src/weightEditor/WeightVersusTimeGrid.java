@@ -1,9 +1,13 @@
 package weightEditor;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private static final double Y_MAX = AnalysisEquation.MAX_COEF;
 
 
+	private BufferedImage backgroundImage;
 	private Node selectedNode;
 	private ArrayList<Node> nodes;
 	private List<Point> points;//the graph is stored as Points for each pixel
@@ -28,14 +33,13 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private boolean smoothCurve;
 	private int waviness;//the length of the constructed "tangent" segment
 
-	//mouse coordinates to display when debugging. Delete later
-	int mx=0;
-	int my = 0;
-
 	public WeightVersusTimeGrid(int x, int y) {
 		super(x, y, PIXEL_WIDTH, PIXEL_HEIGHT);
+		
+		setBackGroundColor(new Color(230,255,235));
+		initBackImage();
+		
 		nodes = new ArrayList<Node>();
-
 		Node default1 = new Node(X_MIN, Y_MIN/2, this);
 		Node default2 = new Node(X_MAX, Y_MAX/2, this);
 		default1.freezeX(true);
@@ -47,6 +51,26 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		smoothCurve = false;
 		waviness = 10;
 		update();
+	}
+
+	private void initBackImage() {
+		backgroundImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = backgroundImage.createGraphics();
+		g2.setColor(backGroundColor);
+		g2.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
+		//grid lines
+		g2.setColor(new Color(230,245,255));
+		addTickMarks(g2, getGridX(X_MAX, 0)- getGridX(X_MIN, 0));
+
+		//draw axes
+		Stroke defaultStroke = g.getStroke();
+		g2.setStroke(new BasicStroke(3));
+		//tick marks
+		g2.setColor(Color.blue);
+		g2.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
+		g2.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
+		g2.setStroke(defaultStroke);
+		addTickMarks(g2, 4);
 	}
 
 	/**
@@ -123,28 +147,23 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private void redrawNodes() {
 		// TODO Auto-generated method stub
 		//		boolean hoveredTextDrawn = false;
-		g.setColor(Color.white);
-		g.fillRect(100, 60, 120, 60);
+
 		for(Node n : nodes){
 			//			g.drawImage(n.getImage(), n.getX()-n.getDiameter()/2, n.getY()-n.getDiameter()/2, null);
-			g.setColor(Color.black);
-			g.drawString("Mouse on "+mx+", "+my, 100, 80);
+			g.setColor(new Color(50,70,50));
 
 			if(n.isHovered() ){
-				g.drawString("Node:("+n.getxCoordinate()+","+n.getyCoordinate()+")", 100,100);
+				double x = (int)(n.getxCoordinate()*100)/100.0;
+				double y = (int)(n.getyCoordinate()*100)/100.0;
+				g.drawString("Node:("+x+","+y+")", 4,PIXEL_HEIGHT-4);
 			}
 
 		}
 	}
 
 	private void updateGraph(){
-
-		//draw axes
-		g.setColor(Color.white);
-		g.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
-		g.setColor(Color.blue);
-		g.drawLine(getYAxis(), 0, getYAxis(), PIXEL_HEIGHT);
-		g.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
+		g.drawImage(backgroundImage, 0, 0, null);
+		
 		g.setColor(Color.black);
 		System.out.println("nodes.size is "+nodes.size()+" , smooth curve is "+smoothCurve+", and mouseReleased is "+mouseReleased);
 		if(nodes.size()>2 && smoothCurve && mouseReleased){
@@ -180,6 +199,24 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		mouseReleased=true;
 	}
 
+	private void addTickMarks(Graphics2D g2, int tickLength){
+
+		int xIncrement = 10;//minutes
+		double yIncrement = .20;//percent
+		for(int x = getYAxis(); x <=getGridX(X_MAX, 0); x+=xIncrement*getXPixelScale()){
+			g2.drawLine(x, getXAxis()-tickLength, x, getXAxis()+tickLength);
+		}
+		for(int x = getYAxis(); x >=getGridX(X_MIN,0); x-=xIncrement*getXPixelScale()){
+			g2.drawLine(x, getXAxis()-tickLength, x, getXAxis()+tickLength);
+		}
+		for(double y = getXAxis(); y >=getGridY(Y_MAX, 0); y-=yIncrement*getYPixelScale()){
+			g2.drawLine(getYAxis()-tickLength, (int)y, getYAxis()+tickLength, (int)y);
+		}
+		for(int y = getXAxis(); y <=getGridY(Y_MIN, 0); y+=yIncrement*getYPixelScale()){
+			g2.drawLine(getYAxis()-tickLength, y, getYAxis()+tickLength, y);
+		}
+	}
+	
 	private List<Point> smooth(List<Point> iter, int numberOfIterations) {
 		System.out.println("smoothing "+iter.size()+" points");
 		if(numberOfIterations > 3){
@@ -402,8 +439,6 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -426,12 +461,25 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		mouseReleased = true;
+		setMarkedForUpdate(true);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if(selectedNode != null){
-			selectedNode.setXYCoordinates(locationToXCoordinate(e.getX()-getX()), locationToYCoordinate(e.getY()));
+			int d = selectedNode.getDiameter()/2;
+			double x = locationToXCoordinate(e.getX()-getX()-d);
+			int i = nodes.indexOf(selectedNode);
+			if(i > 0 && x< nodes.get(i-1).getxCoordinate())x = nodes.get(i-1).getxCoordinate()+1;
+			if(i < nodes.size()-1 && x > nodes.get(i+1).getxCoordinate())x = nodes.get(i+1).getxCoordinate()-1;
+			
+
+			
+			double y = locationToYCoordinate(e.getY()-d);
+			//snap to x-axis
+			if(Math.abs(y) <.03)y=0;
+			
+			selectedNode.setXYCoordinates(x, y);
 			setMarkedForUpdate(true);
 			mouseReleased = false;
 		}
@@ -441,18 +489,18 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		mx = e.getX();
-		my = e.getY();
-		update();
+//		update();
 		for(Node n: nodes){
 			int d = n.getDiameter()/2;
 			if(e.getX()>getAbsoluteX(n)-d && e.getX() < getAbsoluteX(n) + 2*d &&
 					e.getY()>getAbsoluteY(n)-d && e.getY() < getAbsoluteY(n)+2*d){
-				n.setHovered(true);
-				selectedNode=n;
-				n.update();
+				if(selectedNode!= n) {
+					n.setHovered(true);
+					selectedNode=n;
+					n.update();
+					setMarkedForUpdate(true);
+				}
 
-				setMarkedForUpdate(true);
 			}else{
 				if(n.isHovered()){
 					n.setHovered(false);

@@ -103,5 +103,55 @@ public class AnalysisEquation extends VisibleComponent{
 		return "Value = "+value+", Absent "+absentPercentage+"%, Late "+latePercentage+"%";
 	}
 
+
+	public double getPercentageLateCoef() {
+		return percentageLateCoef;
+	}
+
+
+	public void setPercentageLateCoef(double percentageLateCoef) {
+		this.percentageLateCoef = percentageLateCoef;
+	}
+
+
+	public double getPercentagePresenceCoef() {
+		return percentagePresenceCoef;
+	}
+
+
+	public void setPercentagePresenceCoef(double percentagePresenceCoef) {
+		this.percentagePresenceCoef = percentagePresenceCoef;
+	}
+
+
+	public double getOnTimeCoef() {
+		return onTimeCoef;
+	}
+
+
+	public void setOnTimeCoef(double onTimeCoef) {
+		this.onTimeCoef = onTimeCoef;
+	}
+
+
+	public double getLateCoef() {
+		return lateCoef;
+	}
+
+
+	public void setLateCoef(double lateCoef) {
+		this.lateCoef = lateCoef;
+	}
+
+
+	public double getAbsenceCoef() {
+		return absenceCoef;
+	}
+
+
+	public void setAbsenceCoef(double absenceCoef) {
+		this.absenceCoef = absenceCoef;
+	}
+
 	
 }
