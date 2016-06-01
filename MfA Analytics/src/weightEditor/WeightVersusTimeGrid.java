@@ -57,7 +57,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		backgroundImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = backgroundImage.createGraphics();
 		g2.setColor(backGroundColor);
-		g2.fillRoundRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT,5,5);
+		g2.fillRoundRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT,8,8);
 		//grid lines
 		g2.setColor(new Color(230,245,255));
 		addTickMarks(g2, getGridX(X_MAX, 0)- getGridX(X_MIN, 0));
@@ -71,6 +71,9 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		g2.drawLine(0, getXAxis(),PIXEL_WIDTH,getXAxis());
 		g2.setStroke(defaultStroke);
 		addTickMarks(g2, 4);
+		//add border
+		g2.setColor(new Color(80,160,100));
+		g2.drawRoundRect(0, 0, PIXEL_WIDTH-1, PIXEL_HEIGHT-1,8,8);
 	}
 
 	/**
@@ -209,7 +212,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		for(int x = getYAxis(); x >=getGridX(X_MIN,0); x-=xIncrement*getXPixelScale()){
 			g2.drawLine(x, getXAxis()-tickLength, x, getXAxis()+tickLength);
 		}
-		for(double y = getXAxis(); y >=getGridY(Y_MAX, 0); y-=yIncrement*getYPixelScale()){
+		for(double y = getXAxis(); y >getGridY(Y_MAX, 0); y-=yIncrement*getYPixelScale()){
 			g2.drawLine(getYAxis()-tickLength, (int)y, getYAxis()+tickLength, (int)y);
 		}
 		for(int y = getXAxis(); y <=getGridY(Y_MIN, 0); y+=yIncrement*getYPixelScale()){

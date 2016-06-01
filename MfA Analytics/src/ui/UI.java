@@ -49,7 +49,7 @@ public class UI extends JFrame implements ComponentListener{
 		display = new ArrayList<Visible>();
 		refresh = true;
 		
-		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN, _GRID_Y_MARGIN);
+		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN+5, _GRID_Y_MARGIN+5);
 		equation = new AnalysisEquation(SPACING, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
 		sliders = new SliderComponent(SPACING, _GRID_Y_MARGIN, equation);
 		viewer = new RecordViewer(WIDTH-RecordViewer.VIEWER_WIDTH-50, _GRID_Y_MARGIN);
