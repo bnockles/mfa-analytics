@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +25,7 @@ public abstract class VisibleComponent implements Visible {
 	public VisibleComponent(int x, int y, int width, int height){
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		g = (Graphics2D)image.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		InputStream is = VisibleComponent.class.getResourceAsStream("/AdventPro-Medium.ttf");
 		try {
 			Font font= Font.createFont(Font.TRUETYPE_FONT, is);

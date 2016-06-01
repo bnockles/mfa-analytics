@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,14 +30,16 @@ public class Button extends VisibleComponent {
 
 	private void draw(BufferedImage img, boolean b) {
 		Graphics2D g = img.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		Color background = (b)?new Color(200,200,200):Color.white;
 		g.setColor(background);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(Color.black);
 		g.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 5, 5);
 		g.setFont(baseFont);
-		
-		GuiUtilities.centerText(g, text, getWidth(), getHeight() - 5);
+		FontMetrics fm = g.getFontMetrics();
+		int fheight = fm.getHeight();
+		GuiUtilities.centerText(g, text, getWidth(), (getHeight()+fheight)/2-fm.getDescent());
 	}
 
 	@Override

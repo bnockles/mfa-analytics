@@ -57,7 +57,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		backgroundImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = backgroundImage.createGraphics();
 		g2.setColor(backGroundColor);
-		g2.fillRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT);
+		g2.fillRoundRect(0, 0, PIXEL_WIDTH, PIXEL_HEIGHT,5,5);
 		//grid lines
 		g2.setColor(new Color(230,245,255));
 		addTickMarks(g2, getGridX(X_MAX, 0)- getGridX(X_MIN, 0));

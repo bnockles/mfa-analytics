@@ -16,7 +16,7 @@ public class VerticalSlider extends VisibleComponent{
 	private double value;
 	private boolean dragging;
 
-	public static final int TOP_MARGIN = 20;
+	public static final int TOP_MARGIN = 25;
 	public static final int BOTTOM_MARGIN = 10;
 	public static final int SLIDER_WIDTH = 60;
 	
@@ -34,7 +34,7 @@ public class VerticalSlider extends VisibleComponent{
 		super(x,y,SLIDER_WIDTH,height);
 		this.action = action;
 		this.name = name;
-		baseFont =baseFont.deriveFont(12f);
+		baseFont =baseFont.deriveFont(14f);
 		g.setFont(baseFont);
 		value = 0.0;
 		max = 1.0;
