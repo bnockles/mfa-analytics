@@ -57,21 +57,23 @@ public class UI extends JFrame{
 		
 		addMouseMotionListener(grid);
 		addMouseListener(grid);
+		addMouseListener(sliders);
 		addMouseMotionListener(viewer);
 		addMouseMotionListener(sliders);
 		
 		Timer timer = new Timer(30, new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				boolean update = false;;
-				for(Visible v: display){
-					if(v.markedForUpdate()){
-						v.update();
-						update = true;
-//						break;
-					}
-				}
-				if(update)UI.this.repaint();
+//				boolean update = false;;
+//				for(Visible v: display){
+//					if(v.markedForUpdate()){
+//						v.update();
+//						update = true;
+////						break;
+//					}
+//				}
+//				if(update)
+				UI.this.repaint();
 			}
 		});
 		timer.start();
@@ -153,10 +155,10 @@ public class UI extends JFrame{
 	public void paint(Graphics g){
 		Graphics2D g2 = image.createGraphics();
 		for(Visible v: display){
-//			if(v.markedForUpdate()){
-//				v.update();
+			if(v.markedForUpdate()){
+				v.update();
 				g2.drawImage(v.getImage(), v.getX(), v.getY(), null);	
-//			}
+			}
 		}
 		g2.setColor(Color.black);
 		g.drawImage(image, 0, 0, null);

@@ -67,6 +67,9 @@ public abstract class VisibleComponent implements Visible {
 		this.y = y;
 	}
 
+	public void setBaseFont(Font f){
+		baseFont = f;
+	}
 	
 	public int getWidth(){
 		return image.getWidth();
