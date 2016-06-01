@@ -10,18 +10,19 @@ import ui.GuiUtilities;
 import ui.VisibleComponent;
 
 
-public class TimelinessRecord{
+public class TimelinessRecord implements Comparable<TimelinessRecord>{
 
 
 
-	
+
 	Teacher teacher;
 	PD pd;
 	String teacherName;
 	String identifier;
 	String status;
 	Date time;
-	
+	int minutesLate;
+
 
 
 
@@ -39,8 +40,8 @@ public class TimelinessRecord{
 		identifier = id;
 		this.status=status;
 		this.time = time;
+		minutesLate = AnalysisEquation.minutesPastStart(time);
 
-		
 	}
 
 
@@ -75,7 +76,7 @@ public class TimelinessRecord{
 	public PD getPd() {
 		return pd;
 	}
-	
+
 	public int getWorkshop() {
 		return pd.getWorkshop();
 	}
@@ -85,7 +86,7 @@ public class TimelinessRecord{
 	}
 
 
-	
+
 	/**
 	 * 
 	 * @return the time the teacher checked in, formatted to EST time zone, even though actual data is UTC
@@ -93,6 +94,14 @@ public class TimelinessRecord{
 	public String getFormattedTime() {
 		if(time != null){
 			DateFormat df = new SimpleDateFormat(AttendanceCsv.TIMESTAMP_FORMAT);
+			return df.format(time);
+		}
+		else return "";
+	}
+	
+	public String getFormattedDate() {
+		if(time != null){
+			DateFormat df = new SimpleDateFormat("MM/dd/yy");
 			return df.format(time);
 		}
 		else return "";
@@ -115,6 +124,15 @@ public class TimelinessRecord{
 		this.status = status;
 
 
+	}
+
+	public int getMinutesLate(){
+		return minutesLate;
+	}
+
+	@Override
+	public int compareTo(TimelinessRecord t) {
+		return t.getMinutesLate()-this.minutesLate;
 	}
 
 

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,11 +37,14 @@ public class UI extends JFrame implements ComponentListener{
 	private ArrayList<Visible> display;
 	private BufferedImage image;
 	private Button updateRanks;
+	private Button switchMode;
+	private Button up;
+	private Button down;
 	private ArrayList<Button> allButtons;
 	private boolean refresh;
 	
 	private static final int _GRID_X_MARGIN = 120+SPACING;
-	private static final int _GRID_Y_MARGIN = 80;
+	private static final int _GRID_Y_MARGIN = 120;
 	private static final int _VIEWER_MARGIN = 100 + WeightVersusTimeGrid.PIXEL_WIDTH+SPACING;
 	private static final int _BUTTON_Y=_GRID_Y_MARGIN-50;
 	private static final int _BUTTON_HEIGHT=40;
@@ -94,6 +99,37 @@ public class UI extends JFrame implements ComponentListener{
 	private void addButtons() {
 		allButtons = new ArrayList<Button>();
 		
+		int arrowHeight = 40;
+		int arrowWidth = 20;
+		BufferedImage upIcon = new BufferedImage(arrowWidth, arrowHeight, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage downIcon = new BufferedImage(arrowWidth, arrowHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D upG = upIcon.createGraphics();
+		Graphics2D downG = downIcon.createGraphics();
+		int[] xs =  {1,19,10};
+		int[] yDown =  {5,5,35};
+		int[] yUp =  {35,35,5};
+		Polygon arrowDown = new Polygon(xs,yDown,3);//down arrow
+		Polygon arrowUp = new Polygon(xs,yUp,3);//up arrow
+		upG.setColor(Color.BLACK);
+		downG.setColor(Color.BLACK);
+		upG.fillPolygon(arrowUp);
+		downG.fillPolygon(arrowDown);
+		up = new ImageButton(upIcon,WIDTH-RecordViewer.VIEWER_WIDTH-50-arrowWidth,_GRID_Y_MARGIN,arrowWidth,arrowHeight, new Action() {
+			
+			@Override
+			public void act() {
+				viewer.setStartIndex(viewer.getStartIndex()-RecordViewer.VIEWER_ROWS);
+				viewer.setMarkedForUpdate(true);
+			}
+		});
+		down = new ImageButton(downIcon,WIDTH-RecordViewer.VIEWER_WIDTH-50-arrowWidth,_GRID_Y_MARGIN+RecordViewer.VIEWER_HEIGHT-arrowHeight,arrowWidth,arrowHeight, new Action() {
+			
+			@Override
+			public void act() {
+				viewer.setStartIndex(viewer.getStartIndex()+RecordViewer.VIEWER_ROWS);
+				viewer.setMarkedForUpdate(true);
+			}
+		});
 		
 		updateRanks = new Button("Update Ranking", WIDTH-RecordViewer.VIEWER_WIDTH-50, _BUTTON_Y,120,_BUTTON_HEIGHT, new Action() {
 			
@@ -102,6 +138,27 @@ public class UI extends JFrame implements ComponentListener{
 				viewer.recalculate(equation);
 			}
 		} );
+		
+		switchMode = new Button("PDs", WIDTH-RecordViewer.VIEWER_WIDTH-50+120+SPACING, _BUTTON_Y,120,_BUTTON_HEIGHT, new Action() {
+			
+			private boolean teacherMode=true;
+			
+			@Override
+			public void act() {
+				if(teacherMode){
+				viewer.setMode(RecordViewer.PDS_VIEW);
+				switchMode.setText("Teachers");
+				}else{
+					viewer.setMode(RecordViewer.TEACHERS_VIEW);
+					switchMode.setText("PDs");
+				}
+				viewer.recalculate(equation);
+				viewer.setMarkedForUpdate(true);
+				switchMode.setMarkedForUpdate(true);
+				teacherMode=!teacherMode;
+			}
+		} );
+		
 		Button addNode = new Button("Add Node", _GRID_X_MARGIN, _BUTTON_Y, 120, _BUTTON_HEIGHT, new Action(){
 
 			@Override
@@ -139,11 +196,17 @@ public class UI extends JFrame implements ComponentListener{
 		display.add(addNode);
 		display.add(removeNode);
 		display.add(smoothCurve);
+		display.add(switchMode);
+		display.add(up);
+		display.add(down);
 		
 		allButtons.add(updateRanks);
 		allButtons.add(addNode);
 		allButtons.add(removeNode);
 		allButtons.add(smoothCurve);
+		allButtons.add(switchMode);
+		allButtons.add(up);
+		allButtons.add(down);
 		
 		addMouseListener(new ButtonListener(allButtons));
 	}

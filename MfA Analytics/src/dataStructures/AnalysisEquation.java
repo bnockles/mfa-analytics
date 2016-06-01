@@ -77,7 +77,7 @@ public class AnalysisEquation extends VisibleComponent{
 		
 		FontMetrics fm1 = g.getFontMetrics();
 		int keyWidth = fm1.stringWidth(key);
-		int margin = keyWidth+5;
+		int margin = keyWidth+35;
 
 		g.setFont(original);
 		String eq = "v = "+GuiUtilities.format(absenceCoef)+"a + "+GuiUtilities.format(percentageLateCoef)+"l + ";

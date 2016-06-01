@@ -3,6 +3,7 @@ package ui;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 
 public class GuiUtilities {
 
@@ -34,6 +35,13 @@ public class GuiUtilities {
 		d = (int)(d*100)/100.0;
 		return ""+d;
 	}
+	
+	//rounds to o decimalPlaces
+	public static String formatTenths(double d){
+		d = (int)(d*10)/10.0;
+		return ""+d;
+	}
+	
 	public static void drawSigma(Graphics2D g, int i, int j, int h) {
 		g.drawLine(i+h/3, j+h/2, i, j);//center to top right
 		g.drawLine(i+h/3, j+h/2, i, j+h);//center to bottom left
@@ -41,6 +49,9 @@ public class GuiUtilities {
 		g.drawLine(i, j+h, i+2*h/3, j+h);//bottom
 		g.drawLine(i+2*h/3, j, i+2*h/3, j+h/5);//top right serif
 		g.drawLine(i+2*h/3, j+h, i+2*h/3, j+h-h/5);//bottom right serif
+	}
+	public static void centerIcon(Graphics2D g, Image icon, int width, int height) {
+		g.drawImage(icon, (width -icon.getWidth(null))/2, (height-icon.getHeight(null))/2, null);
 	}
 
 }

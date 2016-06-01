@@ -14,9 +14,9 @@ public class Button extends VisibleComponent {
 
 	private String text;
 	private boolean isClicked;
-	private BufferedImage normal;
-	private BufferedImage clicked;
-	private Action action;
+	protected BufferedImage normal;
+	protected BufferedImage clicked;
+	protected Action action;
 	
 	public Button(String text, int x, int y, int width, int height, Action action) {
 		super(x, y, width, height);
@@ -27,8 +27,16 @@ public class Button extends VisibleComponent {
 		draw(clicked, true);
 		this.action = action;
 	}
+	
+	public Button(int x, int y, int width, int height, Action action) {
+		super(x, y, width, height);
+		this.text = "";
+		normal = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		clicked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		this.action =action;
+	}
 
-	private void draw(BufferedImage img, boolean b) {
+	protected void draw(BufferedImage img, boolean b) {
 		Graphics2D g = img.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		Color background = (b)?new Color(200,200,200):Color.white;
@@ -59,6 +67,13 @@ public class Button extends VisibleComponent {
 
 	public void act() {
 		action.act();
+	}
+
+	public void setText(String string) {
+		this.text = string;
+		draw(normal, false);
+		draw(clicked, true);
+		setMarkedForUpdate(true);
 	}
 
 }

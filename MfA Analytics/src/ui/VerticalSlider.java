@@ -66,6 +66,13 @@ public class VerticalSlider extends VisibleComponent{
 		GuiUtilities.centerText(g, name, getWidth(), 26);
 		int sliderWidth = 6;
 		g.setColor(_SLOT_COLOR);
+		int pixelIncrement = (_Y_MIN-_Y_MAX)/10;
+		double increment = (max-min)/10;
+		int n = 0;
+		for(int i = _Y_MIN; i > _Y_MAX; i -= pixelIncrement){
+			g.drawString(GuiUtilities.formatTenths(min + n*increment), 2, i);
+			n++;
+		}
 		g.fillRoundRect((getWidth()-sliderWidth)/2, _Y_MAX, sliderWidth, getHeight()-TOP_MARGIN-BOTTOM_MARGIN*2,3,3);
 
 		g.setColor(_SLIDER_COLOR);
@@ -81,7 +88,10 @@ public class VerticalSlider extends VisibleComponent{
 
 	private double getSliderValue(int y) {
 		int difference = y - _Y_MAX;
-		return max -(max-min)*difference/(_Y_MIN-_Y_MAX);
+		double v = max -(max-min)*difference/(_Y_MIN-_Y_MAX);
+		if(v > max)return max;
+		else if(v<min) return min;
+		else return v;
 	}
 
 	public void setDragging(boolean b){

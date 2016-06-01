@@ -1,6 +1,7 @@
 package dataStructures;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -63,6 +64,18 @@ public class AttendanceCsv implements Serializable{
 		locations=new ArrayList<String>();
 		try {
 			loadCSVFile(ui, new FileReader(saveFileName));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}  
+	}
+	
+	public AttendanceCsv(UI ui, File csvFile){
+		allAttendanceRecords = new ArrayList<TimelinessRecord>();
+		loadedPDs=new ArrayList<PD>();
+		teachers=new ArrayList<Teacher>();
+		locations=new ArrayList<String>();
+		try {
+			loadCSVFile(ui, new FileReader(csvFile));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}  

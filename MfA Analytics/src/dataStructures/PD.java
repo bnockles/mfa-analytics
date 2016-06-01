@@ -68,7 +68,7 @@ public class PD extends ViewerLabel{
 	
 	@Override
 	public boolean equals(Object record2) {
-		if(record2 instanceof PD && ((PD) record2).getTitle().equals(title) && ((PD) record2).getWorkshop() == numberOfWorkshops)return true;
+		if(record2 instanceof PD && ((PD) record2).getTitle().equals(title))return true;
 		else return false;
 	}
 

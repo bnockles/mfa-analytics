@@ -67,7 +67,6 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 
 	public void updateValue(AnalysisEquation equation){
 		infoString = equation.getTimelinessValueStatement(timestamps, this);
-		System.out.println(displayNameString+" "+infoString);
 		update();
 	}
 	

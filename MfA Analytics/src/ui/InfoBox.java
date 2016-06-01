@@ -3,9 +3,13 @@ package ui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
+import java.util.ArrayList;
+import java.util.Collections;
 
+import dataStructures.AnalysisEquation;
 import dataStructures.PD;
 import dataStructures.Teacher;
+import dataStructures.TimelinessRecord;
 
 public class InfoBox extends VisibleComponent {
 
@@ -15,6 +19,7 @@ public class InfoBox extends VisibleComponent {
 	private static final int LINE_HEIGHT = 25;
 	private static final int y1=25;
 	private static final int y2=y1 + LINE_HEIGHT;
+	private static final int y3=y2 + LINE_HEIGHT;
 
 	private static final int x1=10;
 	private static final int x2=INFO_BOX_WIDTH/2;
@@ -53,6 +58,21 @@ public class InfoBox extends VisibleComponent {
 			g.setStroke(currentStroke);
 			g.drawString("Late "+info.getLatePercentage()+"% of time", x1, y2);
 			g.drawString("Absent "+info.getAbsentPercentage()+"% of time", x2, y2);
+			
+			ArrayList<TimelinessRecord> minutes = new ArrayList<TimelinessRecord>();
+			for(TimelinessRecord t: info.getTimestamps()){
+				int minutesLate = AnalysisEquation.minutesPastStart(t.getTime());
+				if( minutesLate > 0){
+					minutes.add(t);
+				}
+			}
+			Collections.sort(minutes);
+			g.drawString("Top 5 Tardiness", x1, y3);
+			int j = 1;
+			for(int i = minutes.size()-1; i >=0 && j < 6; i--){
+				g.drawString(minutes.get(i).getMinutesLate()+" min late ("+minutes.get(i).getFormattedDate()+")", x1+8, y3+LINE_HEIGHT*j);
+				j++;
+			}
 			
 		}
 	}

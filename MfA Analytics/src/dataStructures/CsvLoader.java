@@ -4,20 +4,35 @@ package dataStructures;
 
 
 
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import ui.UI;
-import ui.VisibleComponent;
 
 public class CsvLoader {
 
 	public static final String sampleAttendance = "SampleAttendance/sampleAttendance.csv";
 
-	
-	
+
+
 	public CsvLoader(UI ui){
-		ui.setCsv(new AttendanceCsv(ui, sampleAttendance));
+		final JFileChooser fc = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV FILES","csv","csv");
+		fc.setFileFilter(filter);
+		//In response to a button click:
+		int returnVal = fc.showOpenDialog(ui);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			//This is where a real application would open the file.
+			ui.setCsv(new AttendanceCsv(ui, sampleAttendance));
+		} else {
+
+		}
 	}
 
 
 
-	
+
 }

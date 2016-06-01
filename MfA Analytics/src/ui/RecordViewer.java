@@ -53,7 +53,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 			g.drawString("Records are both null", 0, 25);
 		}
 		if(infoBox.markedForUpdate())infoBox.update();
-		g.drawImage(infoBox.getImage(), infoBox.getX(), infoBox.getY(),null);
+		g.drawImage(infoBox.getImage(), infoBox.getX(), infoBox.getY()+80,null);
 	
 	}
 	
@@ -83,6 +83,10 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		}
 		if(i < 0) i =0;
 		startIndex = i;
+	}
+	
+	public int getStartIndex(){
+		return startIndex;
 	}
 	
 	public void recalculate(AnalysisEquation eq) {
@@ -142,13 +146,19 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 				else return teachers.get(startIndex + itemNumber);
 			}
 			if(viewing == PDS_VIEW && pds != null){
-				if(pds.size() < startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
+				if(pds.size() <= startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
 				else return pds.get(startIndex + itemNumber);
 			}else return null;
 			
 		}else {
 			return null;
 		}
+	}
+
+
+	public void setMode(int mode) {
+		viewing = mode;
+		setMarkedForUpdate(true);
 	}
 
 }
