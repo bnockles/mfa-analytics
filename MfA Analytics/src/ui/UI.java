@@ -26,6 +26,7 @@ import javax.swing.Timer;
 import dataStructures.AnalysisEquation;
 import dataStructures.AttendanceCsv;
 import dataStructures.CsvLoader;
+import search.SearchWindow;
 import weightEditor.WeightVersusTimeGrid;
 
 public class UI extends JFrame implements ComponentListener{
@@ -35,6 +36,7 @@ public class UI extends JFrame implements ComponentListener{
 	public static final int SPACING = 20;
 	
 	private AttendanceCsv csv;
+	private SearchWindow searchWindow;
 	private WeightVersusTimeGrid grid;
 	private AnalysisEquation equation;
 	private RecordViewer viewer;
@@ -70,6 +72,7 @@ public class UI extends JFrame implements ComponentListener{
 		equation = new AnalysisEquation(SPACING, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
 		sliders = new SliderComponent(SPACING, _GRID_Y_MARGIN, equation);
 		viewer = new RecordViewer(WIDTH-RecordViewer.VIEWER_WIDTH-50, _GRID_Y_MARGIN);
+		searchWindow = new SearchWindow(this, getWidth()-RecordViewer.VIEWER_WIDTH, _GRID_Y_MARGIN);
 		addButtons();
 		
 		//add all visible components
@@ -84,6 +87,7 @@ public class UI extends JFrame implements ComponentListener{
 		addMouseListener(sliders);
 		addMouseMotionListener(viewer);
 		addMouseMotionListener(sliders);
+		addMouseListener(searchWindow);
 		
 		Timer timer = new Timer(30, new ActionListener() {
 
@@ -288,8 +292,7 @@ public class UI extends JFrame implements ComponentListener{
 	}
 
 	protected void showSearch() {
-		// TODO Auto-generated method stub
-		
+		searchWindow.setVisible(true);
 	}
 
 	public void paint(Graphics g){
@@ -334,6 +337,7 @@ public class UI extends JFrame implements ComponentListener{
 			updateRanks.setX(getWidth()-RecordViewer.VIEWER_WIDTH-50);
 			switchMode.setX(getWidth()-RecordViewer.VIEWER_WIDTH-50+120+SPACING);
 			up.setX(getWidth()-60+_ARROW_WIDTH);
+			searchWindow.setX(getWidth()-RecordViewer.VIEWER_WIDTH);
 			down.setX(getWidth()-60+_ARROW_WIDTH);
 			refresh = true;
 			repaint();
