@@ -15,7 +15,8 @@ import dataStructures.Teacher;
 public class RecordViewer extends VisibleComponent implements MouseMotionListener {
 
 	public static int VIEWER_ROWS = 10;
-	public static int VIEWER_WIDTH = ViewerLabel.LABEL_WIDTH;
+	private static int _LABEL_MARGIN=30;
+	public static int VIEWER_WIDTH = ViewerLabel.LABEL_WIDTH+_LABEL_MARGIN;
 //	public static int VIEWER_HEIGHT = VIEWER_ROWS *ViewerLabel.LABEL_HEIGHT;
 	public static int VIEWER_HEIGHT = VIEWER_ROWS*ViewerLabel.LABEL_HEIGHT;
 	public static int LABEL_SPACE = ViewerLabel.LABEL_HEIGHT;
@@ -33,7 +34,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	
 	public RecordViewer(int x, int y) {
 		super(x, y, VIEWER_WIDTH, VIEWER_HEIGHT+InfoBox.INFO_BOX_HEIGHT);
-		backGroundColor = new Color(155,155,155);
+		backGroundColor = new Color(205,235,245);
 		viewing = TEACHERS_VIEW;
 		startIndex = 0;
 		infoBox = new InfoBox(0, VIEWER_HEIGHT);
@@ -43,27 +44,28 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	@Override
 	public void draw() {
 		g.setColor(backGroundColor);
-		g.fillRect(0, 0, VIEWER_WIDTH, VIEWER_HEIGHT);
+		g.fillRoundRect(1, 1, VIEWER_WIDTH-2, VIEWER_HEIGHT-2,8,8);
 		if(viewing == TEACHERS_VIEW && teachers != null){
 			drawObjects(teachers);
 		}else if(viewing == PDS_VIEW && pds != null){
 			drawObjects(pds);
 		}else{
 			g.setColor(foreGroundColor);
-			g.drawString("Records are both null", 0, 25);
+			g.drawString("No data has been loaded", 5, 30);
 		}
 		if(infoBox.markedForUpdate())infoBox.update();
-		g.drawImage(infoBox.getImage(), infoBox.getX(), infoBox.getY()+80,null);
+		g.drawImage(infoBox.getImage(), infoBox.getX(), infoBox.getY(),null);
 	
 	}
 	
 	private void drawObjects(List<?> components) {
 		int i = startIndex;
 		int row = 0;
-		while(i < VIEWER_ROWS && i < components.size()){
+		while(i < startIndex+VIEWER_ROWS && i < components.size()){
 			ViewerLabel label = (ViewerLabel)components.get(i);
 			g.setColor(Color.black);
-			g.drawImage(label.getImage(), 0, LABEL_SPACE * row, null);
+			g.drawString((i+1)+".", 3, LABEL_SPACE*(row)+32);
+			g.drawImage(label.getImage(), _LABEL_MARGIN, LABEL_SPACE * row, null);
 			row ++;
 			i ++;
 		}
@@ -142,7 +144,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		if(mx > 0 && mx < VIEWER_WIDTH && my > 0 && my < VIEWER_HEIGHT){
 			int itemNumber = my/LABEL_SPACE;
 			if(viewing == TEACHERS_VIEW && teachers != null){
-				if(teachers.size() < startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
+				if(teachers.size() <= startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
 				else return teachers.get(startIndex + itemNumber);
 			}
 			if(viewing == PDS_VIEW && pds != null){
@@ -158,6 +160,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 
 	public void setMode(int mode) {
 		viewing = mode;
+		startIndex=0;
 		setMarkedForUpdate(true);
 	}
 

@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dataStructures.AnalysisEquation;
+import dataStructures.AttendanceCsv;
+import dataStructures.TimelinessRecord;
+import ui.GuiUtilities;
 import ui.VisibleComponent;
 
 public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotionListener, MouseListener{
@@ -32,13 +35,17 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	private boolean mouseReleased;
 	private boolean smoothCurve;
 	private int waviness;//the length of the constructed "tangent" segment
+	private boolean graphMode;
+	private ArrayList<AttendanceBar> bars;
+	private int barInterval;
+	private AttendanceBar hoveredBar;
 
 	public WeightVersusTimeGrid(int x, int y) {
 		super(x, y, PIXEL_WIDTH, PIXEL_HEIGHT);
-		
+
 		setBackGroundColor(new Color(230,255,235));
 		initBackImage();
-		
+
 		nodes = new ArrayList<Node>();
 		Node default1 = new Node(X_MIN, Y_MIN/2, this);
 		Node default2 = new Node(X_MAX, Y_MAX/2, this);
@@ -50,6 +57,9 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		mouseReleased = true;
 		smoothCurve = false;
 		waviness = 10;
+		graphMode = true;
+		bars = new ArrayList<AttendanceBar>();
+		barInterval = 15;
 		update();
 	}
 
@@ -136,18 +146,32 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	}
 
+	public void viewGraph(boolean b){
+		graphMode = b;
+		setMarkedForUpdate(true);
+	}
+
 	@Override
 	public void draw() {
 		//		if(markedForUpdate()) {
-		updateGraph();
+		if (graphMode){
+			updateGraph();
+			drawNodesLabel();
+		}else{
+			g.drawImage(backgroundImage, 0, 0, null);
+			for(AttendanceBar bar : bars){
+				bar.update();
+				g.drawImage(bar.getImage(), bar.getX(), bar.getY(), null);
+				drawBarLabel();
+			}
+		}
 		//		}else{
-		redrawNodes();
 		//		}
 	}
 
 
 
-	private void redrawNodes() {
+	private void drawNodesLabel() {
 		// TODO Auto-generated method stub
 		//		boolean hoveredTextDrawn = false;
 
@@ -164,11 +188,28 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		}
 	}
 
+	private void drawBarLabel() {
+
+			g.setColor(new Color(50,70,50));
+
+			
+			if(hoveredBar != null){
+				String late = "late";
+				int coef = 1;
+				if(hoveredBar.getMax()<=0){
+					late = "early";
+					coef = -1;
+				}
+				g.drawString("Between"+(hoveredBar.getMin()*coef)+" and "+(hoveredBar.getMax()*coef)+" minutes "+late+", "+hoveredBar.getCount()+" people or "+hoveredBar.getPercentage(), 4,PIXEL_HEIGHT-4);
+			}
+
+		
+	}
+
 	private void updateGraph(){
 		g.drawImage(backgroundImage, 0, 0, null);
-		
+
 		g.setColor(Color.black);
-		System.out.println("nodes.size is "+nodes.size()+" , smooth curve is "+smoothCurve+", and mouseReleased is "+mouseReleased);
 		if(nodes.size()>2 && smoothCurve && mouseReleased){
 			List<Point> start = new ArrayList<Point>();
 			start.addAll(nodes);
@@ -206,20 +247,32 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 		int xIncrement = 10;//minutes
 		double yIncrement = .20;//percent
+		int i = 0;
 		for(int x = getYAxis(); x <=getGridX(X_MAX, 0); x+=xIncrement*getXPixelScale()){
 			g2.drawLine(x, getXAxis()-tickLength, x, getXAxis()+tickLength);
+			if(xIncrement*i != 0) g2.drawString(xIncrement*i+"", x-6, getXAxis()+tickLength+12);
+			i++;
 		}
+		i = 0;
 		for(int x = getYAxis(); x >=getGridX(X_MIN,0); x-=xIncrement*getXPixelScale()){
 			g2.drawLine(x, getXAxis()-tickLength, x, getXAxis()+tickLength);
+			if(xIncrement*i != 0) g2.drawString(xIncrement*-i+"", x-12, getXAxis()+tickLength+12);
+			i++;
 		}
+		i=0;
 		for(double y = getXAxis(); y >getGridY(Y_MAX, 0); y-=yIncrement*getYPixelScale()){
 			g2.drawLine(getYAxis()-tickLength, (int)y, getYAxis()+tickLength, (int)y);
+			if(yIncrement*i != 0) g2.drawString(GuiUtilities.formatTenths(yIncrement*i)+"", getYAxis()-tickLength-22, (int)y);
+			i++;
 		}
+		i=0;
 		for(int y = getXAxis(); y <=getGridY(Y_MIN, 0); y+=yIncrement*getYPixelScale()){
 			g2.drawLine(getYAxis()-tickLength, y, getYAxis()+tickLength, y);
+			if(yIncrement*i != 0) g2.drawString(GuiUtilities.formatTenths(yIncrement*-i)+"", getYAxis()-tickLength-22, (int)y);
+			i++;
 		}
 	}
-	
+
 	private List<Point> smooth(List<Point> iter, int numberOfIterations) {
 		System.out.println("smoothing "+iter.size()+" points");
 		if(numberOfIterations > 3){
@@ -359,6 +412,23 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		}
 	}
 
+	public void setBarData(AttendanceCsv attendanceCsv) {
+		bars = new ArrayList<AttendanceBar>();
+		int numberOfBars = (int) ((X_MAX - X_MIN)/barInterval);
+		for(int i = 0; i < numberOfBars; i++){
+			bars.add(new AttendanceBar(X_MIN+barInterval*i, X_MIN+barInterval*(i+1), attendanceCsv.getRecords().size(),this));
+		}
+		for(TimelinessRecord t: attendanceCsv.getRecords()){
+			double x = AnalysisEquation.minutesPastStart(t.getTime());
+			for(AttendanceBar bar : bars){
+				if(bar.includes(x))bar.increase();
+			}
+		}
+		for(AttendanceBar b: bars){
+			b.update();
+		}
+	}
+
 	public Point midpoint(Point p, Point q) {
 		return new Point((p.getxCoordinate()+q.getxCoordinate())/2.0, (p.getyCoordinate()+q.getyCoordinate())/2.0, this); 
 	}
@@ -397,7 +467,12 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 		return -(double)(y-getY()+Node.NODE_DIAMETER/2-getXAxis())/getYPixelScale();
 	}
 
-	//returns X coordinate of Point relative to this
+	/**
+	 * 
+	 * @param xCoordinate
+	 * @param diameter
+	 * @return X coordinate of Point relative to this
+	 */
 	public int getGridX(double xCoordinate, int diameter){
 		return (int) (getYAxis()+xCoordinate*getXPixelScale())-diameter/2;
 	}
@@ -475,13 +550,13 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			int i = nodes.indexOf(selectedNode);
 			if(i > 0 && x< nodes.get(i-1).getxCoordinate())x = nodes.get(i-1).getxCoordinate()+1;
 			if(i < nodes.size()-1 && x > nodes.get(i+1).getxCoordinate())x = nodes.get(i+1).getxCoordinate()-1;
-			
 
-			
+
+
 			double y = locationToYCoordinate(e.getY()-d);
 			//snap to x-axis
 			if(Math.abs(y) <.03)y=0;
-			
+
 			selectedNode.setXYCoordinates(x, y);
 			setMarkedForUpdate(true);
 			mouseReleased = false;
@@ -492,27 +567,49 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-//		update();
-		for(Node n: nodes){
-			int d = n.getDiameter()/2;
-			if(e.getX()>getAbsoluteX(n)-d && e.getX() < getAbsoluteX(n) + 2*d &&
-					e.getY()>getAbsoluteY(n)-d && e.getY() < getAbsoluteY(n)+2*d){
-				if(selectedNode!= n) {
-					n.setHovered(true);
-					selectedNode=n;
-					n.update();
-					setMarkedForUpdate(true);
-				}
+		int mx =e.getX()-getX();
+		int my =e.getY()-getY();
+		if(graphMode){
+			for(Node n: nodes){
+				int d = n.getDiameter()/2;
+				if(e.getX()>getAbsoluteX(n)-d && e.getX() < getAbsoluteX(n) + 2*d &&
+						e.getY()>getAbsoluteY(n)-d && e.getY() < getAbsoluteY(n)+2*d){
+					if(selectedNode!= n) {
+						n.setHovered(true);
+						selectedNode=n;
+						n.update();
+						setMarkedForUpdate(true);
 
-			}else{
-				if(n.isHovered()){
-					n.setHovered(false);
-					selectedNode = null;
-					n.update();
-					setMarkedForUpdate(true);
-				}
+					}
 
-			}				
+				}else{
+					if(selectedNode == n && n.isHovered()){
+						n.setHovered(false);
+						selectedNode = null;
+						n.update();
+						setMarkedForUpdate(true);
+					}
+
+				}				
+			}
+		}else{
+			for(AttendanceBar b: bars){
+				if(mx > b.getX() && mx < b.getX2() && my > b.getY() && my < b.getY2()){
+					if(hoveredBar!= b) {
+						if(hoveredBar!=null)hoveredBar.setHovered(false);
+						hoveredBar = b;
+						b.setHovered(true);
+						setMarkedForUpdate(true);
+					}
+					
+				}else{
+					if(hoveredBar == b){
+						hoveredBar = null;
+						b.setHovered(false);
+						setMarkedForUpdate(true);
+					}
+				}
+			}
 		}
 	}
 

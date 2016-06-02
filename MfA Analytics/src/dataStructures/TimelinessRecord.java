@@ -132,7 +132,7 @@ public class TimelinessRecord implements Comparable<TimelinessRecord>{
 
 	@Override
 	public int compareTo(TimelinessRecord t) {
-		return t.getMinutesLate()-this.minutesLate;
+		return this.minutesLate-t.getMinutesLate();
 	}
 
 

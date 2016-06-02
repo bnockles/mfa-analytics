@@ -105,9 +105,11 @@ public class AnalysisEquation extends VisibleComponent{
 
 	public static int minutesPastStart(Date time){
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(time);
-		int minutesPastNoon = cal.get(Calendar.HOUR)*60+cal.get(Calendar.MINUTE);
-		return minutesPastNoon-START_TIME;
+		if(time != null) {
+			cal.setTime(time);
+			int minutesPastNoon = cal.get(Calendar.HOUR)*60+cal.get(Calendar.MINUTE);
+			return minutesPastNoon-START_TIME;
+		}else return 0;
 	}
 	
 	

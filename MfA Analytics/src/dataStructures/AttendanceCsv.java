@@ -104,11 +104,8 @@ public class AttendanceCsv implements Serializable{
 					//parse the date from this entry
 					DateFormat format = new SimpleDateFormat("MM/dd/yy");
 					Date date = null;
-					try{
-						date = format.parse(row[DATE_INDEX].replaceAll("\"", ""));
-					}catch (ParseException e) {
-						e.printStackTrace();
-					}
+					date = format.parse(row[DATE_INDEX].replaceAll("\"", ""));
+				
 					
 					
 					//Start by checking whether or not the PD has already been loaded	
@@ -153,11 +150,9 @@ public class AttendanceCsv implements Serializable{
 					foundContent++;
 
 				}catch(ArrayIndexOutOfBoundsException e){
-					//this exception is thrown at the end of the document, which contains document information
-					e.printStackTrace();
+
 				}catch(Exception e){
-					//this exception is thrown aduring the first line, since it is the header row
-					e.printStackTrace();
+
 				}
 
 

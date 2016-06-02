@@ -1,10 +1,12 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -13,7 +15,7 @@ import dataStructures.TimelinessRecord;
 
 public abstract class ViewerLabel extends VisibleComponent implements Comparable<ViewerLabel> {
 
-	public static final int LABEL_WIDTH = 400;
+	public static final int LABEL_WIDTH = 410;
 	public static final int LABEL_HEIGHT = 40;
 	
 	private static final int _MARGIN = 5;
@@ -32,9 +34,16 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 	
 	public ViewerLabel(String label, int x, int y) {
 		super(x, y, LABEL_WIDTH, LABEL_HEIGHT);
-		backGroundColor = new Color(200,200,200);
+		backGroundColor = new Color(240,255,255);
 		highlightColor =  Color.white;
 		foreGroundColor = Color.black;
+		InputStream is = VisibleComponent.class.getResourceAsStream("/DayRoman.ttf");
+		try {
+			Font font= Font.createFont(Font.TRUETYPE_FONT, is);
+			baseFont=font.deriveFont(14f);
+			g.setFont(baseFont);
+		} catch (Exception e) {
+		}
 		displayNameString = label;
 		infoString = "";
 		timestamps = new ArrayList<TimelinessRecord>();
@@ -58,9 +67,10 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 		}else{
 			g.setColor(highlightColor);
 		}
+		
 		g.fillRect(_MARGIN, _MARGIN, LABEL_WIDTH-2*_MARGIN, LABEL_HEIGHT-2*_MARGIN);	
 		g.setColor(foreGroundColor);
-		int margin = LABEL_WIDTH - 250;
+		int margin = LABEL_WIDTH - 260;
 		g.drawString(GuiUtilities.shortenStringtoFit(g, displayNameString,margin), _MARGIN +3, LABEL_HEIGHT-_MARGIN-3);
 		g.drawString(infoString, margin + 2, LABEL_HEIGHT-_MARGIN-3);
 	}

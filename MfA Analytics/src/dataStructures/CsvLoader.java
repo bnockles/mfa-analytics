@@ -26,7 +26,7 @@ public class CsvLoader {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			//This is where a real application would open the file.
-			ui.setCsv(new AttendanceCsv(ui, sampleAttendance));
+			ui.setCsv(new AttendanceCsv(ui, file));
 		} else {
 
 		}

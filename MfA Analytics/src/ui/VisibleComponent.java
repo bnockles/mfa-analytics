@@ -43,6 +43,15 @@ public abstract class VisibleComponent implements Visible {
 		foreGroundColor = Color.black;
 	}
 	
+	public VisibleComponent(){
+		image = null;
+		this.x = 0;
+		this.y = 0;
+		visible = true;
+		backGroundColor = Color.white;
+		foreGroundColor = Color.black;
+	}
+	
 	
 	@Override
 	public BufferedImage getImage() {
@@ -83,6 +92,8 @@ public abstract class VisibleComponent implements Visible {
 	public void setBaseFont(Font f){
 		baseFont = f;
 	}
+	
+	
 	
 	public int getWidth(){
 		return image.getWidth();

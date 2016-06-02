@@ -17,6 +17,7 @@ public class Button extends VisibleComponent {
 	protected BufferedImage normal;
 	protected BufferedImage clicked;
 	protected Action action;
+	protected boolean enabled;
 	
 	public Button(String text, int x, int y, int width, int height, Action action) {
 		super(x, y, width, height);
@@ -42,17 +43,22 @@ public class Button extends VisibleComponent {
 		Color background = (b)?new Color(200,200,200):Color.white;
 		g.setColor(background);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		g.setColor(Color.black);
-		g.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 5, 5);
+		drawBorder(img, g);
 		g.setFont(baseFont);
+		enabled=true;
 		FontMetrics fm = g.getFontMetrics();
 		int fheight = fm.getHeight();
 		GuiUtilities.centerText(g, text, getWidth(), (getHeight()+fheight)/2-fm.getDescent());
 	}
 
+	protected void drawBorder(BufferedImage img, Graphics2D g){
+		g.setColor(Color.black);
+		g.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 9, 9);
+	}
+	
 	@Override
 	public void draw() {
-		if(isClicked)image = clicked;
+		if(isClicked || !enabled)image = clicked;
 		else image = normal;	
 	}
 	
@@ -66,13 +72,18 @@ public class Button extends VisibleComponent {
 	}
 
 	public void act() {
-		action.act();
+		if(enabled)action.act();
 	}
 
 	public void setText(String string) {
 		this.text = string;
 		draw(normal, false);
 		draw(clicked, true);
+		setMarkedForUpdate(true);
+	}
+	
+	public void setEnabled(boolean b){
+		enabled = b;
 		setMarkedForUpdate(true);
 	}
 

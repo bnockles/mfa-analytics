@@ -14,7 +14,7 @@ import dataStructures.TimelinessRecord;
 public class InfoBox extends VisibleComponent {
 
 	public static final int INFO_BOX_WIDTH = RecordViewer.VIEWER_WIDTH;
-	public static final int INFO_BOX_HEIGHT = 400;
+	public static final int INFO_BOX_HEIGHT = 240;
 
 	private static final int LINE_HEIGHT = 25;
 	private static final int y1=25;
@@ -41,7 +41,7 @@ public class InfoBox extends VisibleComponent {
 		g.setColor(foreGroundColor);
 		if(info instanceof PD){
 			PD pd = (PD)info;
-			g.drawString(pd.getTitle()+", "+pd.getWorkshop()+" workshops", x1, y1);
+			g.drawString(GuiUtilities.shortenStringtoFit(g, pd.getTitle(), INFO_BOX_WIDTH-130)+", "+GuiUtilities.shortenStringtoFit(g, pd.getWorkshop()+" workshops",130), x1, y1);
 		}else if (info instanceof Teacher){
 			Teacher t = (Teacher)info;
 			g.drawString(t.getFirstName()+" "+t.getLastName(), x1, y1);
@@ -53,7 +53,8 @@ public class InfoBox extends VisibleComponent {
 			g.setColor(new Color(100,150,255));
 			BasicStroke s = new BasicStroke(3);
 			g.setStroke(s);
-			g.drawRoundRect(5, 5, getWidth()-10, 100, 5, 5);
+			//draw border
+			g.drawRoundRect(5, 5, getWidth()-10, INFO_BOX_HEIGHT-10, 5, 5);
 			g.setColor(foreGroundColor);
 			g.setStroke(currentStroke);
 			g.drawString("Late "+info.getLatePercentage()+"% of time", x1, y2);

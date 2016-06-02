@@ -1,10 +1,7 @@
 package ui;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 public class ImageButton extends Button{
@@ -15,7 +12,7 @@ public class ImageButton extends Button{
 		super(x, y, width, height, action);
 		this.icon = icon;
 		draw(normal, false);
-		draw(clicked, true);
+		clicked = normal;
 		this.action = action;
 	}
 	
@@ -24,6 +21,10 @@ public class ImageButton extends Button{
 		Graphics2D g2 = img.createGraphics();
 //		g2.drawImage(icon, 0, 0, null);
 		GuiUtilities.centerIcon(g2, icon, getWidth(), getHeight());
+	}
+	
+	protected void drawBorder(BufferedImage img, Graphics2D g){
+		//Override does nothing, so no border appears
 	}
 
 }
