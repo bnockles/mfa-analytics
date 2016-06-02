@@ -7,12 +7,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class Button extends VisibleComponent {
 
-	private String text;
+	protected String text;
 	private boolean isClicked;
 	protected BufferedImage normal;
 	protected BufferedImage clicked;

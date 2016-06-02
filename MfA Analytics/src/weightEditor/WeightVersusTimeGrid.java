@@ -20,7 +20,7 @@ import ui.VisibleComponent;
 public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotionListener, MouseListener{
 
 
-	public static final int PIXEL_WIDTH = 500;
+	public static final int PIXEL_WIDTH = 550;
 	public static final int PIXEL_HEIGHT = 400;
 	private static final double X_MIN = -60;//60 minutes early
 	private static final double X_MAX = 90;//90 minutes late
@@ -253,6 +253,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			if(xIncrement*i != 0) g2.drawString(xIncrement*i+"", x-6, getXAxis()+tickLength+12);
 			i++;
 		}
+		g2.drawString("minutes", getGridX(X_MAX, 0)-50, getXAxis()+tickLength+24);
 		i = 0;
 		for(int x = getYAxis(); x >=getGridX(X_MIN,0); x-=xIncrement*getXPixelScale()){
 			g2.drawLine(x, getXAxis()-tickLength, x, getXAxis()+tickLength);
@@ -265,10 +266,11 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			if(yIncrement*i != 0) g2.drawString(GuiUtilities.formatTenths(yIncrement*i)+"", getYAxis()-tickLength-22, (int)y);
 			i++;
 		}
+		g2.drawString("weight", getYAxis()+tickLength-50,getGridY(Y_MAX, 0)+24);
 		i=0;
 		for(int y = getXAxis(); y <=getGridY(Y_MIN, 0); y+=yIncrement*getYPixelScale()){
 			g2.drawLine(getYAxis()-tickLength, y, getYAxis()+tickLength, y);
-			if(yIncrement*i != 0) g2.drawString(GuiUtilities.formatTenths(yIncrement*-i)+"", getYAxis()-tickLength-22, (int)y);
+			if(yIncrement*i != 0) g2.drawString(GuiUtilities.formatTenths(yIncrement*-i)+"", getYAxis()-tickLength-29, (int)y);
 			i++;
 		}
 	}

@@ -17,21 +17,21 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	public static int VIEWER_ROWS = 10;
 	private static int _LABEL_MARGIN=30;
 	public static int VIEWER_WIDTH = ViewerLabel.LABEL_WIDTH+_LABEL_MARGIN;
-//	public static int VIEWER_HEIGHT = VIEWER_ROWS *ViewerLabel.LABEL_HEIGHT;
+	//	public static int VIEWER_HEIGHT = VIEWER_ROWS *ViewerLabel.LABEL_HEIGHT;
 	public static int VIEWER_HEIGHT = VIEWER_ROWS*ViewerLabel.LABEL_HEIGHT;
 	public static int LABEL_SPACE = ViewerLabel.LABEL_HEIGHT;
-	
+
 	public static final int TEACHERS_VIEW = 0;
 	public static final int PDS_VIEW = 1;
-	
+
 	private List<Teacher> teachers;
 	private List<PD> pds;
 	private int viewing;
 	private int startIndex;
 	private ViewerLabel hovered;
 	private InfoBox infoBox;
-	
-	
+
+
 	public RecordViewer(int x, int y) {
 		super(x, y, VIEWER_WIDTH, VIEWER_HEIGHT+InfoBox.INFO_BOX_HEIGHT);
 		backGroundColor = new Color(205,235,245);
@@ -55,9 +55,9 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		}
 		if(infoBox.markedForUpdate())infoBox.update();
 		g.drawImage(infoBox.getImage(), infoBox.getX(), infoBox.getY(),null);
-	
+
 	}
-	
+
 	private void drawObjects(List<?> components) {
 		int i = startIndex;
 		int row = 0;
@@ -80,17 +80,19 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	}
 
 	public void setStartIndex(int i){
-		while((viewing == TEACHERS_VIEW &&  i > teachers.size())  || (viewing == PDS_VIEW && i > pds.size())){
-			i -=VIEWER_ROWS;
+		if(teachers != null && pds != null){
+			while((viewing == TEACHERS_VIEW &&  i > teachers.size())  || (viewing == PDS_VIEW && i > pds.size())){
+				i -=VIEWER_ROWS;
+			}
+			if(i < 0) i =0;
+			startIndex = i;
 		}
-		if(i < 0) i =0;
-		startIndex = i;
 	}
-	
+
 	public int getStartIndex(){
 		return startIndex;
 	}
-	
+
 	public void recalculate(AnalysisEquation eq) {
 		if(viewing == TEACHERS_VIEW){
 			for(Teacher t: teachers){
@@ -104,13 +106,13 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 			Collections.sort(pds);
 		}
 		setMarkedForUpdate(true);
-		
+
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -151,7 +153,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 				if(pds.size() <= startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
 				else return pds.get(startIndex + itemNumber);
 			}else return null;
-			
+
 		}else {
 			return null;
 		}

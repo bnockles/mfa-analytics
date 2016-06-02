@@ -90,13 +90,13 @@ public class AnalysisEquation extends VisibleComponent{
 		g.setStroke(thick);
 		int sigmaHeight = EQUATION_HEIGHT-55;
 		GuiUtilities.drawSigma(g,margin+eqWidth, 12, sigmaHeight);
-		g.drawString("w r", margin+eqWidth+2*sigmaHeight/3+6, sigmaHeight+12);//sequence terms
-		g.drawString("t", margin+eqWidth+45, EQUATION_HEIGHT);//divisor
+		g.drawString("w", margin+eqWidth+2*sigmaHeight/3+6, sigmaHeight+12);//sequence terms
+		g.drawString("t", margin+eqWidth+25, EQUATION_HEIGHT);//divisor
 		g.setFont(baseFont);
 		g.drawString("n=1", margin+eqWidth, sigmaHeight+31);//n=1
-		g.drawString("n   n", margin+eqWidth+ 2*sigmaHeight/3+26, sigmaHeight+16);//subscripts
+		g.drawString("n", margin+eqWidth+ 2*sigmaHeight/3+26, sigmaHeight+16);//subscripts
 		g.drawString("t", margin+eqWidth+sigmaHeight/3-3, 10);//t
-		g.drawLine(margin+eqWidth, EQUATION_HEIGHT-22, margin+eqWidth+90, EQUATION_HEIGHT-22);//division bar
+		g.drawLine(margin+eqWidth, EQUATION_HEIGHT-22, margin+eqWidth+60, EQUATION_HEIGHT-22);//division bar
 		g.setFont(original);
 		g.setStroke(s);
 	}

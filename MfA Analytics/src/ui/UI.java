@@ -30,7 +30,7 @@ import weightEditor.WeightVersusTimeGrid;
 
 public class UI extends JFrame implements ComponentListener{
 
-	public static final int WIDTH = 1200;
+	public static final int WIDTH = 1250;
 	public static final int HEIGHT = 800;
 	public static final int SPACING = 20;
 	
@@ -52,11 +52,11 @@ public class UI extends JFrame implements ComponentListener{
 	private ArrayList<Button> allButtons;
 	private boolean refresh;
 	
-	private static final int _GRID_X_MARGIN = 120+SPACING;
+	private static final int _GRID_X_MARGIN = 145+SPACING;
 	private static final int _GRID_Y_MARGIN = 120;
 	private static final int _VIEWER_MARGIN = 100 + WeightVersusTimeGrid.PIXEL_WIDTH+SPACING;
-	private static final int _BUTTON_Y=_GRID_Y_MARGIN-50;
-	private static final int _BUTTON_HEIGHT=40;
+	private static final int _BUTTON_Y=_GRID_Y_MARGIN-40;
+	private static final int _BUTTON_HEIGHT=30;
 	private static final int _ARROW_WIDTH = 20;
 	private static final int _ARROW_HEIGHT = 60;
 	
@@ -101,7 +101,6 @@ public class UI extends JFrame implements ComponentListener{
 		});
 		timer.start();
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_ARGB);
-		initImage();
 		repaint();
 		setVisible(true);		
 
@@ -154,7 +153,7 @@ public class UI extends JFrame implements ComponentListener{
 		Image open=null;
 		try {
 			open = ImageIO.read(is);
-			Button openButton = new ImageButton(open.getScaledInstance(40, 40, Image.SCALE_SMOOTH), 60, _BUTTON_Y, 40, 40, new Action() {
+			Button openButton = new ImageTextButton("Open",open.getScaledInstance(34, 34, Image.SCALE_SMOOTH), 10, _BUTTON_Y-10, 120, _BUTTON_HEIGHT+10, new Action() {
 				
 				@Override
 				public void act() {
@@ -267,19 +266,11 @@ public class UI extends JFrame implements ComponentListener{
 		addMouseListener(new ButtonListener(allButtons));
 	}
 
-	public void initImage(){
-		Graphics2D g2 = image.createGraphics();
-		g2.fillRect(0, 0, WIDTH, HEIGHT);
-		for(Visible v: display){
-				v.update();
-				g2.drawImage(v.getImage(), v.getX(), v.getY(), null);		
-		}
-		repaint();
-	}
-	
 	public void paint(Graphics g){
 		Graphics2D g2 = image.createGraphics();
 		if(refresh){
+			image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+			g2 = image.createGraphics();
 			g2.setColor(Color.white);
 			g2.fillRect(0, 0, getWidth(), getHeight());
 		}
