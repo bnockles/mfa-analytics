@@ -48,6 +48,7 @@ public class UI extends JFrame implements ComponentListener{
 	private Button switchMode;
 	private Button graph;
 	private Button up;
+	private Button search;
 	private Button down;
 	private ArrayList<Button> allButtons;
 	private boolean refresh;
@@ -185,6 +186,26 @@ public class UI extends JFrame implements ComponentListener{
 				teacherMode=!teacherMode;
 			}
 		} );
+
+		
+		is = VisibleComponent.class.getResourceAsStream("/Search.png");
+		Image searchIcon=null;
+		try {
+			searchIcon = ImageIO.read(is);
+			search = new ImageButton(searchIcon.getScaledInstance(34, 34, Image.SCALE_SMOOTH), WIDTH-RecordViewer.VIEWER_WIDTH-50+240+SPACING, _BUTTON_Y,40,_BUTTON_HEIGHT, new Action() {
+				
+				
+				@Override
+				public void act() {
+					showSearch();
+				}
+			} );
+			display.add(search);
+			allButtons.add(search);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		
 		addNode = new Button("Add Node", _GRID_X_MARGIN, _BUTTON_Y, 120, _BUTTON_HEIGHT, new Action(){
 
@@ -264,6 +285,11 @@ public class UI extends JFrame implements ComponentListener{
 		allButtons.add(graph);
 		
 		addMouseListener(new ButtonListener(allButtons));
+	}
+
+	protected void showSearch() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void paint(Graphics g){
