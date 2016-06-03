@@ -74,6 +74,7 @@ public class UI extends JFrame implements ComponentListener{
 		viewer = new RecordViewer(WIDTH-RecordViewer.VIEWER_WIDTH-50, _GRID_Y_MARGIN);
 		searchWindow = new SearchWindow(this, getWidth()-RecordViewer.VIEWER_WIDTH, _GRID_Y_MARGIN);
 		addButtons();
+		setViewerButtonEnabled(false);
 		
 		//add all visible components
 		display.add(grid);
@@ -324,10 +325,20 @@ public class UI extends JFrame implements ComponentListener{
 		setUndecorated(false);
 	}
 
+	private void setViewerButtonEnabled(boolean b) {
+		switchMode.setEnabled(b);
+		updateRanks.setEnabled(b);
+	}
+
 	public void setCsv(AttendanceCsv attendanceCsv) {
 		csv = attendanceCsv;
 		viewer.initTeachersAndPDs(equation, csv.getTeachers(), csv.getPDs());
 		grid.setBarData(attendanceCsv);
+		setViewerButtonEnabled(true);
+	}
+	
+	public AttendanceCsv getCsv(){
+		return csv;
 	}
 
 	@Override
