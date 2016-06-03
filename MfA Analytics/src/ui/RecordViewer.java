@@ -86,6 +86,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 			}
 			if(i < 0) i =0;
 			startIndex = i;
+			setMarkedForUpdate(true);
 		}
 	}
 

@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -29,7 +31,7 @@ import dataStructures.CsvLoader;
 import search.SearchWindow;
 import weightEditor.WeightVersusTimeGrid;
 
-public class UI extends JFrame implements ComponentListener{
+public class UI extends JFrame implements ComponentListener, FocusListener{
 
 	public static final int WIDTH = 1250;
 	public static final int HEIGHT = 800;
@@ -72,7 +74,7 @@ public class UI extends JFrame implements ComponentListener{
 		equation = new AnalysisEquation(SPACING, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
 		sliders = new SliderComponent(SPACING, _GRID_Y_MARGIN, equation);
 		viewer = new RecordViewer(WIDTH-RecordViewer.VIEWER_WIDTH-50, _GRID_Y_MARGIN);
-		searchWindow = new SearchWindow(this, getWidth()-RecordViewer.VIEWER_WIDTH, _GRID_Y_MARGIN);
+		searchWindow = new SearchWindow(this, getX() + getWidth()-RecordViewer.VIEWER_WIDTH, getY() + _GRID_Y_MARGIN);
 		addButtons();
 		setViewerButtonEnabled(false);
 		
@@ -88,7 +90,6 @@ public class UI extends JFrame implements ComponentListener{
 		addMouseListener(sliders);
 		addMouseMotionListener(viewer);
 		addMouseMotionListener(sliders);
-		addMouseListener(searchWindow);
 		
 		Timer timer = new Timer(30, new ActionListener() {
 
@@ -294,6 +295,7 @@ public class UI extends JFrame implements ComponentListener{
 
 	protected void showSearch() {
 		searchWindow.setVisible(true);
+		searchWindow.toFront();
 	}
 
 	public void paint(Graphics g){
@@ -329,6 +331,23 @@ public class UI extends JFrame implements ComponentListener{
 		switchMode.setEnabled(b);
 		updateRanks.setEnabled(b);
 	}
+	
+	/**
+	 * used by search function when user selects a search result
+	 * 
+	 * @param i index RecordViewer is to move to
+	 */
+	public void setViewerStartIndex(int i) {
+		viewer.setStartIndex(i);
+	}
+	
+	/**
+	 * 
+	 * @param i Viewer mode (use Viewer static variables)
+	 */
+	public void setViewerMode(int i) {
+		viewer.setMode(i);
+	}
 
 	public void setCsv(AttendanceCsv attendanceCsv) {
 		csv = attendanceCsv;
@@ -352,26 +371,42 @@ public class UI extends JFrame implements ComponentListener{
 			down.setX(getWidth()-60+_ARROW_WIDTH);
 			refresh = true;
 			repaint();
+			searchWindow.setLocation(getWidth()-RecordViewer.VIEWER_WIDTH, _GRID_Y_MARGIN);
 		}
 	}
 
 	@Override
 	public void componentMoved(ComponentEvent e) {
-		// TODO Auto-generated method stub
+		searchWindow.setLocation(getX() + getWidth()-RecordViewer.VIEWER_WIDTH, getY() + _GRID_Y_MARGIN);
 		
 	}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-		// TODO Auto-generated method stub
+		if(searchWindow.isVisible()) {
+			searchWindow.setVisible(true);
+			searchWindow.toFront();
+		}
 		
 	}
 
 	@Override
 	public void componentHidden(ComponentEvent e) {
+		searchWindow.setVisible(false);
+		
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		searchWindow.setVisible(false);
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 	
 }
