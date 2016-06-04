@@ -1,4 +1,4 @@
-package ui;
+package buttons;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -7,6 +7,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+
+import ui.GuiUtilities;
+import ui.VisibleComponent;
 
 public class Button extends VisibleComponent {
 

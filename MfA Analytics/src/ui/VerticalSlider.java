@@ -7,6 +7,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RoundRectangle2D;
 
+import buttons.Action;
+
 public class VerticalSlider extends VisibleComponent{
 
 	private String name;

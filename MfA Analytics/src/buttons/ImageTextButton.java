@@ -1,4 +1,4 @@
-package ui;
+package buttons;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;

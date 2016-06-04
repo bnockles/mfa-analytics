@@ -1,8 +1,10 @@
-package ui;
+package buttons;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+
+import ui.GuiUtilities;
 
 public class ImageButton extends Button{
 

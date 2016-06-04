@@ -11,6 +11,8 @@ import java.util.List;
 import dataStructures.AnalysisEquation;
 import dataStructures.PD;
 import dataStructures.Teacher;
+import progressMonitor.TaskAssignWeights;
+import progressMonitor.WeightCalculator;
 
 public class RecordViewer extends VisibleComponent implements MouseMotionListener {
 
@@ -94,19 +96,22 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		return startIndex;
 	}
 
+	
+	
 	public void recalculate(AnalysisEquation eq) {
-		if(viewing == TEACHERS_VIEW){
-			for(Teacher t: teachers){
-				t.updateValue(eq);
-			}
-			Collections.sort(teachers);
-		}else if(viewing == PDS_VIEW){
-			for(PD pd: pds){
-				pd.updateValue(eq);
-			}
-			Collections.sort(pds);
-		}
-		setMarkedForUpdate(true);
+//		if(viewing == TEACHERS_VIEW){
+//			for(Teacher t: teachers){
+//				t.updateValue(eq);
+//			}
+//			Collections.sort(teachers);
+//		}else if(viewing == PDS_VIEW){
+//			for(PD pd: pds){
+//				pd.updateValue(eq);
+//			}
+//			Collections.sort(pds);
+//		}
+//		setMarkedForUpdate(true);
+		WeightCalculator calculator = new WeightCalculator(this);
 
 	}
 

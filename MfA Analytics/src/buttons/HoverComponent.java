@@ -1,6 +1,8 @@
-package ui;
+package buttons;
 
 import java.awt.Color;
+
+import ui.VisibleComponent;
 
 public abstract class HoverComponent extends VisibleComponent{
 

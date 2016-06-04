@@ -6,6 +6,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import buttons.Action;
 import dataStructures.AnalysisEquation;
 import weightEditor.WeightVersusTimeGrid;
 

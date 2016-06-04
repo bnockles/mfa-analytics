@@ -2,7 +2,7 @@ package search;
 
 import java.awt.Color;
 
-import ui.HoverComponent;
+import buttons.HoverComponent;
 import ui.VisibleComponent;
 
 public class Result extends HoverComponent {
