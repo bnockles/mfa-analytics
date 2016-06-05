@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import dataStructures.AnalysisEquation;
+import dataStructures.Filter;
 import dataStructures.HolisticDataDisplay;
 import dataStructures.PD;
 import dataStructures.Teacher;
@@ -22,10 +23,10 @@ public class WeightCalculator extends ProgressBar {
 	
 
 
-	public WeightCalculator(RecordViewer viewer, List<Teacher> teachers, List<PD> pds, AnalysisEquation eq) {
+	public WeightCalculator(RecordViewer viewer, List<Teacher> teachers, List<PD> pds, AnalysisEquation eq, List<Filter> filters) {
 		super("Updating attendance values");//inits visible JFrame
 		
-		this.task = new TaskAssignWeights(viewer, this,teachers, pds, eq);
+		this.task = new TaskAssignWeights(viewer, this,teachers, pds, eq, filters);
 //		taskOutput.setText("Updating attendance values");
 		
 		start(task);

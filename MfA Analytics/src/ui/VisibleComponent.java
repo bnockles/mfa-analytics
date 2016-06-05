@@ -23,6 +23,15 @@ public abstract class VisibleComponent implements Visible {
 	protected Font baseFont;
 	
 	public VisibleComponent(int x, int y, int width, int height){
+		initImage(width,height);
+		this.x = x;
+		this.y = y;
+		visible = true;
+		backGroundColor = Color.white;
+		foreGroundColor = Color.black;
+	}
+	
+	public void initImage(int width, int height){
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		g = (Graphics2D)image.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -36,11 +45,6 @@ public abstract class VisibleComponent implements Visible {
 		}
 		
 		g.setFont(baseFont);
-		this.x = x;
-		this.y = y;
-		visible = true;
-		backGroundColor = Color.white;
-		foreGroundColor = Color.black;
 	}
 	
 	public VisibleComponent(){

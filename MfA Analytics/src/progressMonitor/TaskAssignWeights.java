@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import dataStructures.AnalysisEquation;
+import dataStructures.Filter;
 import dataStructures.HolisticDataDisplay;
 import dataStructures.PD;
 import dataStructures.Teacher;
@@ -23,14 +24,16 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 	AnalysisEquation eq;
 	int totalRecords;
 	WeightCalculator component;
+	private List<Filter> filters;
 	
 	int recordCount;
 	int absentCount;
 	int lateMinutesCount;
 
-	public TaskAssignWeights(RecordViewer viewer, WeightCalculator c,List<Teacher> teachers, List<PD> pds, AnalysisEquation eq){
+	public TaskAssignWeights(RecordViewer viewer, WeightCalculator c,List<Teacher> teachers, List<PD> pds, AnalysisEquation eq, List<Filter> filters){
 		this.viewer = viewer;
 		this.component = c;
+		this.filters = filters;
 		totalRecords = 0;
 		this.teachers = teachers;
 		this.pds = pds;
@@ -49,6 +52,7 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 		int count = 0;
 		for(Teacher t: teachers){
 			t.updateValue(eq);
+			
 			count += 1;
 			setProgress((int)(count/total*100.0));
 			

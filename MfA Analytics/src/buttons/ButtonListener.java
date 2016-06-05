@@ -11,10 +11,10 @@ import ui.UI;
 
 public class ButtonListener implements MouseListener, MouseMotionListener {
 
-	List<Button> buttons;
+	List<ActOnClick> buttons;
 	UI ui;
 
-	public ButtonListener(List<Button> buttons) {
+	public ButtonListener(List<ActOnClick> buttons) {
 		this.buttons = buttons;
 	}
 
@@ -26,7 +26,7 @@ public class ButtonListener implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		for(Button b: buttons){
+		for(ActOnClick b: buttons){
 			if(b.isVisible() && 
 					e.getX() > b.getX() && e.getX() < b.getX()+b.getWidth() &&
 					e.getY() > b.getY() && e. getY() < b.getY() + b.getHeight()){
@@ -37,7 +37,7 @@ public class ButtonListener implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		for(Button b: buttons){
+		for(ActOnClick b: buttons){
 			if(b.isClicked()){
 				b.act();
 				b.setClicked(false);
@@ -67,19 +67,22 @@ public class ButtonListener implements MouseListener, MouseMotionListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		boolean hoveringSomething = false;
-		for(Button b: buttons){
-			if(b.isVisible() && 
-					e.getX() > b.getX() && e.getX() < b.getX()+b.getWidth() &&
-					e.getY() > b.getY() && e. getY() < b.getY() + b.getHeight()){
-				b.setHover(true);
-				hoveringSomething = true;
-			}else{
-				b.setHover(false);
+		for(ActOnClick b: buttons){
+			if(b instanceof Button){
+				Button button  = (Button)b; 
+				if(button.isVisible() && 
+						e.getX() > button.getX() && e.getX() < button.getX()+button.getWidth() &&
+						e.getY() > button.getY() && e. getY() < button.getY() + button.getHeight()){
+					button.setHover(true);
+					hoveringSomething = true;
+				}else{
+					button.setHover(false);
+				}
 			}
 		}
 
-			if(hoveringSomething) e.getComponent().setCursor (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			else e.getComponent().setCursor (Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		if(hoveringSomething) e.getComponent().setCursor (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		else e.getComponent().setCursor (Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 
 	}

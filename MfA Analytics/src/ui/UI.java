@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -25,10 +26,12 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import buttons.ActOnClick;
 import buttons.Action;
 import buttons.Button;
 import buttons.Button;
 import buttons.ButtonListener;
+import buttons.CheckBox;
 import buttons.ImageButton;
 import buttons.ImageTextButton;
 import buttons.LinkButton;
@@ -36,6 +39,7 @@ import dataStructures.AnalysisEquation;
 import dataStructures.AttendanceCsv;
 import dataStructures.CsvLoader;
 import dataStructures.HolisticDataDisplay;
+import dataStructures.MinRecordFilter;
 import search.SearchWindow;
 import weightEditor.WeightVersusTimeGrid;
 
@@ -46,6 +50,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 	public static final int SPACING = 20;
 	public static final Color ACCENT_COLOR= new Color(80,215,230);
 	public static final Color DISABLED_COLOR= new Color(180,180,180);
+	public static final Color HIGHLIGHT_COLOR = new Color(200,200,255);
 	
 	private AttendanceCsv csv;
 	private SearchWindow searchWindow;
@@ -65,7 +70,8 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 	private Button up;
 	private Button search;
 	private Button down;
-	private ArrayList<Button> allButtons;
+	private MinRecordFilter filter;
+	private ArrayList<ActOnClick> allButtons;
 	private boolean refresh;
 	
 	private static final int _GRID_X_MARGIN = 145+SPACING;
@@ -83,16 +89,13 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		applySettings();//display the JFrame the way I want it
 		display = new ArrayList<Visible>();
 		refresh = true;
-		
 		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN+5, _GRID_Y_MARGIN+5);
 		equation = new AnalysisEquation(SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
 		summaryData = new HolisticDataDisplay(SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING);
+		viewer = new RecordViewer(WIDTH-_VIEWER_MARGIN_FROM_RIGHT, _GRID_Y_MARGIN);
 		summaryData.setVisible(false);
 		sliders = new SliderComponent(SPACING, _GRID_Y_MARGIN, equation);
-		viewer = new RecordViewer(WIDTH-_VIEWER_MARGIN_FROM_RIGHT, _GRID_Y_MARGIN);
 		searchWindow = new SearchWindow(this, getX() + getWidth()-RecordViewer.VIEWER_WIDTH, getY() + _GRID_Y_MARGIN);
-		addButtons();
-		setViewerButtonEnabled(false);
 		
 		//add all visible components
 		display.add(grid);
@@ -100,6 +103,13 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		display.add(summaryData);
 		display.add(viewer);
 		display.add(sliders);
+
+		filter = new MinRecordFilter(SPACING+300, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING+HolisticDataDisplay.DATA_HEIGHT + 40);
+		addButtons();
+		viewer.addFilter(filter);
+		setViewerButtonEnabled(false);
+		
+		display.add(filter);
 		
 		addComponentListener(this);
 		addMouseMotionListener(grid);
@@ -107,6 +117,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		addMouseListener(sliders);
 		addMouseMotionListener(viewer);
 		addMouseMotionListener(sliders);
+		addMouseListener(filter);
 		
 		Timer timer = new Timer(30, new ActionListener() {
 
@@ -130,9 +141,13 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		int[] ys =  {yBase,yBase,yTip};
 		Polygon arrow = new Polygon(xs,ys, 3);//down arrow
 		g.setColor(Color.BLACK);
-		GradientPaint bluetowhite = new GradientPaint(0,yBase,new Color(200,200,255),0,yTip,Color.WHITE);
+		GradientPaint bluetowhite = new GradientPaint(0,yBase,HIGHLIGHT_COLOR,0,yTip,Color.WHITE);
 		g.setPaint(bluetowhite);
 		g.fillPolygon(arrow);
+		g.setStroke(new BasicStroke(2));
+		g.setColor(HIGHLIGHT_COLOR);
+		g.drawPolygon(arrow);
+		g.setStroke(new BasicStroke(1));
 		return icon;
 	}
 	
@@ -221,8 +236,6 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 					smoothCurve.setEnabled(false);
 				}
 				graph.update();
-				summaryData.update();
-				equation.update();
 				summaryData.setMarkedForUpdate(true);
 				equation.setMarkedForUpdate(true);
 				showGraph = !showGraph;
@@ -247,7 +260,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 	}
 	
 	private void addButtons() {
-		allButtons = new ArrayList<Button>();
+		allButtons = new ArrayList<ActOnClick>();
 		
 		//adds all grid and RecordViewer buttons, which have a LINK style
 		addLinkButtons();
@@ -311,16 +324,18 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		}
 
 		
-
+		CheckBox filterCheckbox = new CheckBox("Include only participants with more than ", SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING+HolisticDataDisplay.DATA_HEIGHT, false, filter);
 		
 		
 		
 
 		display.add(up);
 		display.add(down);
+		display.add(filterCheckbox);
 		
 		allButtons.add(up);
 		allButtons.add(down);
+		allButtons.add(filterCheckbox);
 		
 		ButtonListener listener = new ButtonListener(allButtons);
 		addMouseListener(listener);

@@ -12,7 +12,7 @@ import ui.GuiUtilities;
 import ui.UI;
 import ui.VisibleComponent;
 
-public class Button extends HoverComponent{
+public class Button extends HoverComponent implements ActOnClick{
 
 	protected String text;
 	private boolean isClicked;

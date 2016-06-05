@@ -6,6 +6,8 @@ import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import buttons.ActOnClick;
+import buttons.CheckBox;
 import dataStructures.AnalysisEquation;
 import dataStructures.PD;
 import dataStructures.Teacher;
@@ -30,6 +32,7 @@ public class InfoBox extends VisibleComponent {
 		super(x, y, INFO_BOX_WIDTH, INFO_BOX_HEIGHT);
 		backGroundColor = new Color(255,255,255);
 		foreGroundColor = (Color.black);
+
 //		update();
 	}
 
@@ -97,11 +100,13 @@ public class InfoBox extends VisibleComponent {
 			}
 			
 		}
+
 	}
 
 	public void setInfo(ViewerLabel hovered) {
 		this.info = hovered;
 		setMarkedForUpdate(true);
 	}
+
 
 }

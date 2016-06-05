@@ -40,7 +40,6 @@ public class HolisticDataDisplay extends VisibleComponent{
 
 	@Override
 	public void draw() {
-		System.out.println("Drawing holistic data");
 		//		Font original = g.getFont();
 		//		g.setFont(baseFont);
 		g.setColor(backGroundColor);

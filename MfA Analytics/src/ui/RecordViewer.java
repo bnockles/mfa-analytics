@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import buttons.CheckBox;
 import dataStructures.AnalysisEquation;
+import dataStructures.Filter;
 import dataStructures.HolisticDataDisplay;
 import dataStructures.PD;
 import dataStructures.Teacher;
@@ -33,7 +35,8 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	private int startIndex;
 	private ViewerLabel hovered;
 	private InfoBox infoBox;
-	
+	private CheckBox filter;
+	private List<Filter> filters;
 
 
 
@@ -43,9 +46,16 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		viewing = TEACHERS_VIEW;
 		startIndex = 0;
 		infoBox = new InfoBox(0, VIEWER_HEIGHT);
-	
+		filters = new ArrayList<Filter>();
 	}
 
+	public void addFilter(Filter f){
+		filters.add(f);
+	}
+	
+	public void removeFilter(Filter f){
+		if(filters.contains(f))filters.remove(f);
+	}
 
 	@Override
 	public void draw() {
@@ -67,12 +77,18 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	private void drawObjects(List<?> components) {
 		int i = startIndex;
 		int row = 0;
+		g.setColor(Color.black);
 		while(i < startIndex+VIEWER_ROWS && i < components.size()){
 			ViewerLabel label = (ViewerLabel)components.get(i);
-			g.setColor(Color.black);
-			g.drawString((i+1)+".", 3, LABEL_SPACE*(row)+32);
-			g.drawImage(label.getImage(), _LABEL_MARGIN, LABEL_SPACE * row, null);
-			row ++;
+//			boolean display = true;
+//			for(Filter f : filters){
+//				if(!f.isSatisfied(label)) display = false;
+//			}
+//			if(display){
+				g.drawString((i+1)+".", 3, LABEL_SPACE*(row)+32);
+				g.drawImage(label.getImage(), _LABEL_MARGIN, LABEL_SPACE * row, null);
+				row ++;
+//			}s
 			i ++;
 		}
 	}
@@ -102,7 +118,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	
 	public void recalculate(AnalysisEquation eq) {
 
-		new WeightCalculator(this, teachers, pds, eq);
+		new WeightCalculator(this, teachers, pds, eq, filters);
 
 	}
 
@@ -133,6 +149,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 				infoBox.setInfo(null);
 				hovered = null;
 				setMarkedForUpdate(true);
+				if(filter != null) filter.setMarkedForUpdate(true);
 			}
 		}
 	}
