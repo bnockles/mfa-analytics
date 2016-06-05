@@ -3,6 +3,7 @@ package search;
 import java.awt.Color;
 
 import buttons.HoverComponent;
+import ui.UI;
 import ui.VisibleComponent;
 
 public class Result extends HoverComponent {
@@ -17,7 +18,7 @@ public class Result extends HoverComponent {
 	
 	public Result(String description, int resultNumber, int viewerIndex, int viewMode){
 		super(0,resultNumber*RESULT_HEIGHT, RESULT_WIDTH, RESULT_HEIGHT);
-		setHoverColor(new Color(80,215,230));
+		setHoverColor(UI.ACCENT_COLOR);
 		this.description = description;
 		this.requiredMode = viewMode;
 		this.viewerIndex = viewerIndex;

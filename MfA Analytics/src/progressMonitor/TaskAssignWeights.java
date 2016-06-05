@@ -21,6 +21,10 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 	AnalysisEquation eq;
 	int totalRecords;
 	WeightCalculator component;
+	
+	int recordCount;
+	int absentCount;
+	int lateMinutesCount;
 
 	public TaskAssignWeights(RecordViewer viewer, WeightCalculator c,List<Teacher> teachers, List<PD> pds, AnalysisEquation eq){
 		this.viewer = viewer;
@@ -30,6 +34,9 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 		this.pds = pds;
 		this.eq = eq;
 		this.totalRecords = teachers.size()+pds.size();
+		recordCount = 0;
+		absentCount = 0;
+		lateMinutesCount = 0;
 	}
 
 

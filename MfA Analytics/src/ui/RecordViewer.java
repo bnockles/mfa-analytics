@@ -32,6 +32,10 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	private int startIndex;
 	private ViewerLabel hovered;
 	private InfoBox infoBox;
+	
+	private double averageLateness;
+	private int totalRecords;
+	private double averageAbsences;
 
 
 	public RecordViewer(int x, int y) {
@@ -40,6 +44,9 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		viewing = TEACHERS_VIEW;
 		startIndex = 0;
 		infoBox = new InfoBox(0, VIEWER_HEIGHT);
+		averageLateness = 0;
+		totalRecords = 0;
+		averageAbsences = 0;
 	}
 
 
@@ -76,6 +83,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	public void initTeachersAndPDs(AnalysisEquation eq, List<Teacher> tlist, List<PD> pdlist){
 		this.teachers = tlist;
 		this.pds = pdlist;
+
 	}
 
 	public void setStartIndex(int i){
@@ -156,6 +164,10 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		viewing = mode;
 		startIndex=0;
 		setMarkedForUpdate(true);
+	}
+	
+	public int getMode(){
+		return viewing;
 	}
 
 }

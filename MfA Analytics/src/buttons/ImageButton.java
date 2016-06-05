@@ -1,10 +1,12 @@
 package buttons;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import ui.GuiUtilities;
+import ui.UI;
 
 public class ImageButton extends Button{
 
@@ -13,13 +15,15 @@ public class ImageButton extends Button{
 	public ImageButton(Image icon, int x, int y, int width, int height, Action action) {
 		super(x, y, width, height, action);
 		this.icon = icon;
-		draw(normal, false);
+		draw(normal, foreGroundColor);
 		clicked = normal;
+		draw(disabled, UI.DISABLED_COLOR);
+		draw(hoveredImage, UI.ACCENT_COLOR);
 		this.action = action;
 	}
 	
-	protected void draw(BufferedImage img, boolean b) {
-		super.draw(img, b);
+	protected void draw(BufferedImage img, Color front) {
+		super.draw(img, backGroundColor, front);
 		Graphics2D g2 = img.createGraphics();
 //		g2.drawImage(icon, 0, 0, null);
 		GuiUtilities.centerIcon(g2, icon, getWidth(), getHeight());

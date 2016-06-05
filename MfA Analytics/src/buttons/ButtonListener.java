@@ -2,9 +2,10 @@ package buttons;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.List;
 
-public class ButtonListener implements MouseListener {
+public class ButtonListener implements MouseListener, MouseMotionListener {
 
 	List<Button> buttons;
 	
@@ -49,6 +50,26 @@ public class ButtonListener implements MouseListener {
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		for(Button b: buttons){
+			if(b.isVisible() && 
+					e.getX() > b.getX() && e.getX() < b.getX()+b.getWidth() &&
+					e.getY() > b.getY() && e. getY() < b.getY() + b.getHeight()){
+				b.setHover(true);
+			}else{
+				b.setHover(false);
+			}
+		}
 
 	}
 
