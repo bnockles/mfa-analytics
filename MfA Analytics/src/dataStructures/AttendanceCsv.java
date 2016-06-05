@@ -1,10 +1,12 @@
 package dataStructures;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,6 +15,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
+import progressMonitor.FileLoader;
+import progressMonitor.ProgressBar;
+import progressMonitor.WeightCalculator;
 import ui.ErrorMessage;
 import ui.UI;
 
@@ -24,7 +31,7 @@ import ui.UI;
  *
  *For information about files, see: https://vaadin.com/docs/-/part/framework/application/application-resources.html
  */
-public class AttendanceCsv implements Serializable{
+public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializable{
 
 	/**
 	 * 
@@ -34,7 +41,10 @@ public class AttendanceCsv implements Serializable{
 	ArrayList<PD> loadedPDs;
 	ArrayList<Teacher> teachers;
 	ArrayList<String> locations;
-
+	UI ui;
+	FileReader fileReader;
+	ProgressBar component;
+	double total;
 
 	public final static int FIRST_INDEX = 0;
 	public final static int LAST_INDEX = 1;
@@ -52,37 +62,87 @@ public class AttendanceCsv implements Serializable{
 	//basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();  
 
 
-/**
- * 
- * @param ui The JFrame where error messages can be displayed
- * @param saveFileName
- */
-	public AttendanceCsv(UI ui, String saveFileName){
+	
+	public AttendanceCsv(UI ui, File csvFile, FileLoader loader){
 		allAttendanceRecords = new ArrayList<TimelinessRecord>();
 		loadedPDs=new ArrayList<PD>();
 		teachers=new ArrayList<Teacher>();
 		locations=new ArrayList<String>();
+		this.component = loader;
 		try {
-			loadCSVFile(ui, new FileReader(saveFileName));
+			fileReader = new FileReader(csvFile);
+			total = countLines(fileReader);
+			fileReader = new FileReader(csvFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}  
+	}
+
+
+
+
+	private Teacher loadAndAddNewTeacehr(String[] row) {
+		Teacher t = new Teacher(row[LAST_INDEX].replaceAll("\"", ""),row[FIRST_INDEX].replaceAll("\"", ""));
+		Teacher alreadyLoaded=t;
+		boolean wasLoaded = false;
+		for(Teacher tch: teachers){
+			if(t.equals(tch)){
+				alreadyLoaded=tch;
+				wasLoaded=true;
+				break;
+			}
+		}
+		if(!wasLoaded)teachers.add(t);
+		return alreadyLoaded;
+	}
+
+
+	private PD loadAndAddNewPD(String[] row, Date date){
+		int workshopNumber = Integer.parseInt(row[WORKSHOP_INDEX].replace("Workshop ","").replace("\"", ""));
+		String location = row[LOCATION_INDEX].replaceAll("\"", "");
+		PD pd = new PD(row[COURSE_INDEX].replaceAll("\"", ""), workshopNumber, date, location);
+		PD alreadyLoaded=pd;
+		boolean wasLoaded = false;
+		for(PD p: loadedPDs){
+			if(pd.equals(p)){
+				alreadyLoaded=p;
+				wasLoaded=true;
+				alreadyLoaded.addDate(date);
+				alreadyLoaded.addLocation(location);
+				alreadyLoaded.updateWorkshopNumber(workshopNumber);
+				break;
+			}
+		}
+		if(!wasLoaded)loadedPDs.add(pd);
+		return alreadyLoaded;
 	}
 	
-	public AttendanceCsv(UI ui, File csvFile){
-		allAttendanceRecords = new ArrayList<TimelinessRecord>();
-		loadedPDs=new ArrayList<PD>();
-		teachers=new ArrayList<Teacher>();
-		locations=new ArrayList<String>();
-		try {
-			loadCSVFile(ui, new FileReader(csvFile));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}  
+	public List<TimelinessRecord> getRecords(){
+		return allAttendanceRecords;
+	}
+
+	public ArrayList<PD> getPDs(){
+		return loadedPDs;
 	}
 
 
-	public void loadCSVFile(UI ui, FileReader fileReader){
+	public ArrayList<String> getLocations(){
+		return locations;
+	}
+
+
+	public List<Teacher> getTeachers() {
+		return teachers;
+	}
+
+	
+	
+	@Override
+	protected Void doInBackground() throws Exception {
+		
+	
+		int count = 0;
+		
 		BufferedReader br = null;
 		String line = "";
 		int foundContent = 0;
@@ -155,7 +215,9 @@ public class AttendanceCsv implements Serializable{
 
 				}
 
-
+				
+				count ++;
+				setProgress((int)(count/total*100.0));
 			}
 
 		} catch (FileNotFoundException e) {
@@ -172,63 +234,31 @@ public class AttendanceCsv implements Serializable{
 				}
 			}
 		}
+		return null;
 	}
 
-
-	private Teacher loadAndAddNewTeacehr(String[] row) {
-		Teacher t = new Teacher(row[LAST_INDEX].replaceAll("\"", ""),row[FIRST_INDEX].replaceAll("\"", ""));
-		Teacher alreadyLoaded=t;
-		boolean wasLoaded = false;
-		for(Teacher tch: teachers){
-			if(t.equals(tch)){
-				alreadyLoaded=tch;
-				wasLoaded=true;
-				break;
-			}
+	private int countLines(FileReader reader) {
+		int lines = 0;
+		LineNumberReader  lnr = new LineNumberReader(reader);
+		try {
+			lnr.skip(Long.MAX_VALUE);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		if(!wasLoaded)teachers.add(t);
-		return alreadyLoaded;
+		lines =  lnr.getLineNumber() + 1;
+		return lines;
 	}
 
 
-	private PD loadAndAddNewPD(String[] row, Date date){
-		int workshopNumber = Integer.parseInt(row[WORKSHOP_INDEX].replace("Workshop ","").replace("\"", ""));
-		String location = row[LOCATION_INDEX].replaceAll("\"", "");
-		PD pd = new PD(row[COURSE_INDEX].replaceAll("\"", ""), workshopNumber, date, location);
-		PD alreadyLoaded=pd;
-		boolean wasLoaded = false;
-		for(PD p: loadedPDs){
-			if(pd.equals(p)){
-				alreadyLoaded=p;
-				wasLoaded=true;
-				alreadyLoaded.addDate(date);
-				alreadyLoaded.addLocation(location);
-				alreadyLoaded.updateWorkshopNumber(workshopNumber);
-				break;
-			}
-		}
-		if(!wasLoaded)loadedPDs.add(pd);
-		return alreadyLoaded;
+	@Override
+	public void done() {
+		Toolkit.getDefaultToolkit().beep();
+//		startButton.setEnabled(true);
+		component.setCursor(null); //turn off the wait cursor
+//		taskOutput.append("Done!\n");
+		component.setVisible(false);
 	}
-	
-	public List<TimelinessRecord> getRecords(){
-		return allAttendanceRecords;
-	}
-
-	public ArrayList<PD> getPDs(){
-		return loadedPDs;
-	}
-
-
-	public ArrayList<String> getLocations(){
-		return locations;
-	}
-
-
-	public List<Teacher> getTeachers() {
-		return teachers;
-	}
-
 
 
 }

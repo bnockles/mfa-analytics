@@ -22,18 +22,16 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 	int totalRecords;
 	WeightCalculator component;
 
-	public TaskAssignWeights(RecordViewer viewer, WeightCalculator c){
+	public TaskAssignWeights(RecordViewer viewer, WeightCalculator c,List<Teacher> teachers, List<PD> pds, AnalysisEquation eq){
 		this.viewer = viewer;
 		this.component = c;
 		totalRecords = 0;
-	}
-
-	public void setTask(List<Teacher> teachers, List<PD> pds, AnalysisEquation eq){
 		this.teachers = teachers;
 		this.pds = pds;
 		this.eq = eq;
 		this.totalRecords = teachers.size()+pds.size();
 	}
+
 
 	@Override
 	protected Void doInBackground() throws Exception {
@@ -43,16 +41,14 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 		for(Teacher t: teachers){
 			t.updateValue(eq);
 			count += 1;
-			setProgress((int)(count/total));
-			try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {}
+			setProgress((int)(count/total*100.0));
+			
 		}
 		Collections.sort(teachers);
 		for(PD pd: pds){
 			pd.updateValue(eq);
 			count += 1;
-			setProgress((int)(count/total));
+			setProgress((int)(count/total*100.0));
 		}
 		Collections.sort(pds);
 

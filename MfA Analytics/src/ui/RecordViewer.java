@@ -76,7 +76,6 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	public void initTeachersAndPDs(AnalysisEquation eq, List<Teacher> tlist, List<PD> pdlist){
 		this.teachers = tlist;
 		this.pds = pdlist;
-		System.out.println("There are "+teachers.size()+" teacher records");
 		recalculate(eq);
 		setMarkedForUpdate(true);
 	}
@@ -99,19 +98,8 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	
 	
 	public void recalculate(AnalysisEquation eq) {
-//		if(viewing == TEACHERS_VIEW){
-//			for(Teacher t: teachers){
-//				t.updateValue(eq);
-//			}
-//			Collections.sort(teachers);
-//		}else if(viewing == PDS_VIEW){
-//			for(PD pd: pds){
-//				pd.updateValue(eq);
-//			}
-//			Collections.sort(pds);
-//		}
-//		setMarkedForUpdate(true);
-		WeightCalculator calculator = new WeightCalculator(this);
+
+		new WeightCalculator(this, teachers, pds, eq);
 
 	}
 
