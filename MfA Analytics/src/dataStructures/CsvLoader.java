@@ -27,7 +27,7 @@ public class CsvLoader {
 			File file = fc.getSelectedFile();
 			//This is where a real application would open the file.
 			FileLoader loader = new FileLoader(ui, file);
-			ui.setCsv(loader.getAttendanceCsv());
+
 //			ui.setCsv(new AttendanceCsv(ui, file));
 		} else {
 

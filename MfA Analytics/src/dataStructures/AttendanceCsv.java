@@ -247,7 +247,8 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 		loader.setCursor(null); //turn off the wait cursor
 //		taskOutput.append("Done!\n");
 		loader.setVisible(false);
-		ui.recalculate();
+		ui.setCsv(loader.getAttendanceCsv());
+		ui.initCalculate();
 	}
 
 

@@ -35,6 +35,7 @@ import buttons.LinkButton;
 import dataStructures.AnalysisEquation;
 import dataStructures.AttendanceCsv;
 import dataStructures.CsvLoader;
+import dataStructures.HolisticDataDisplay;
 import search.SearchWindow;
 import weightEditor.WeightVersusTimeGrid;
 
@@ -50,6 +51,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 	private SearchWindow searchWindow;
 	private WeightVersusTimeGrid grid;
 	private AnalysisEquation equation;
+	private HolisticDataDisplay summaryData;
 	private RecordViewer viewer;
 	private SliderComponent sliders;
 	private ArrayList<Visible> display;
@@ -83,7 +85,9 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		refresh = true;
 		
 		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN+5, _GRID_Y_MARGIN+5);
-		equation = new AnalysisEquation(SPACING, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
+		equation = new AnalysisEquation(SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
+		summaryData = new HolisticDataDisplay(SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING);
+		summaryData.setVisible(false);
 		sliders = new SliderComponent(SPACING, _GRID_Y_MARGIN, equation);
 		viewer = new RecordViewer(WIDTH-_VIEWER_MARGIN_FROM_RIGHT, _GRID_Y_MARGIN);
 		searchWindow = new SearchWindow(this, getX() + getWidth()-RecordViewer.VIEWER_WIDTH, getY() + _GRID_Y_MARGIN);
@@ -93,6 +97,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		//add all visible components
 		display.add(grid);
 		display.add(equation);
+		display.add(summaryData);
 		display.add(viewer);
 		display.add(sliders);
 		
@@ -106,15 +111,6 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		Timer timer = new Timer(30, new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-//				boolean update = false;;
-//				for(Visible v: display){
-//					if(v.markedForUpdate()){
-//						v.update();
-//						update = true;
-////						break;
-//					}
-//				}
-//				if(update)
 				UI.this.repaint();
 			}
 		});
@@ -210,18 +206,27 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 				grid.viewGraph(showGraph);
 				if(showGraph){
 					graph.setText("Summary");
+					summaryData.setVisible(false);
+					equation.setVisible(true);
 					addNode.setEnabled(true);
 					removeNode.setEnabled(true);
 					smoothCurve.setEnabled(true);
 				}
 				else{
 					graph.setText("Graph");
+					summaryData.setVisible(true);
+					equation.setVisible(false);
 					addNode.setEnabled(false);
 					removeNode.setEnabled(false);
 					smoothCurve.setEnabled(false);
 				}
 				graph.update();
+				summaryData.update();
+				equation.update();
+				summaryData.setMarkedForUpdate(true);
+				equation.setMarkedForUpdate(true);
 				showGraph = !showGraph;
+				repaint();
 			}
 			
 		});
@@ -339,7 +344,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		for(Visible v: display){
 			if(refresh || v.markedForUpdate()){
 				v.update();
-				g2.drawImage(v.getImage(), v.getX(), v.getY(), null);	
+				if(v.isVisible())g2.drawImage(v.getImage(), v.getX(), v.getY(), null);	
 			}
 		}
 		refresh = false;
@@ -440,10 +445,14 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		
 	}
 
-	public void recalculate() {
+	/**
+	 * sets the equation to "initializing" so that Holistic Data will be calculated only once
+	 */
+	public void initCalculate() {
+		AnalysisEquation.setInitializing(true);
+		HolisticDataDisplay.resetCounts();
 		viewer.recalculate(equation);
 	}
 
 
-	
 }

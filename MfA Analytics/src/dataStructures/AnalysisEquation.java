@@ -19,8 +19,8 @@ import weightEditor.WeightVersusTimeGrid;
 
 public class AnalysisEquation extends VisibleComponent{
 
-	public static final int EQUATION_WIDTH = 600;
-	public static final int EQUATION_HEIGHT = 95;
+	public static final int EQUATION_WIDTH = HolisticDataDisplay.DATA_WIDTH;
+	public static final int EQUATION_HEIGHT = HolisticDataDisplay.DATA_HEIGHT;
 	
 	
 	public static final double MAX_COEF = 1.0;
@@ -32,7 +32,7 @@ public class AnalysisEquation extends VisibleComponent{
 	
 	private double percentageLateCoef;//multiplied by number of times late
 	private double absenceCoef;//multiplied by number of absences
-	
+	private static boolean initializing;
 	
 	
 	public AnalysisEquation(int x, int y, WeightVersusTimeGrid grid) {
@@ -45,7 +45,7 @@ public class AnalysisEquation extends VisibleComponent{
 			g.setFont(font);
 		} catch (Exception e) {
 		}
-		
+		initializing = false;
 		this.grid = grid;
 		foreGroundColor = Color.black;
 		draw();
@@ -119,18 +119,21 @@ public class AnalysisEquation extends VisibleComponent{
 		int absences = 0;
 		int lateness= 0;
 		double value = 0.0;
+		int minutesLate = 0;
 		for(TimelinessRecord tr : timestamps){
 			if(tr.getStatus().equals(TimelinessRecord.ABSENT))absences ++;
 			else if(tr.getStatus().equals(TimelinessRecord.EXCUSED))records --;//does not count excused absences in the average
 			else if(tr.getTime() == null)records --;//if time was not taken, record is not included in analysis
 			else {
 				int lateValue = minutesPastStart(tr.getTime());
+				minutesLate+= lateValue;
 				if(lateValue > 0){
 					lateness++;
 				}
 				value += grid.calculateWeight(lateValue);
 			}
 		}
+		if(initializing)HolisticDataDisplay.tallyData(records, lateness, absences, minutesLate);
 		int absentPercentage = 0;
 		int latePercentage  = 0;			
 		if(records != 0){
@@ -143,7 +146,8 @@ public class AnalysisEquation extends VisibleComponent{
 		value = value + absenceCoef*absentPercentage + percentageLateCoef*latePercentage;
 		value = (int)(value*100)/100.0;
 		
-		
+		label.setTotalRecords(records);
+		label.setMinutesLate(minutesLate);
 		label.setValue(value);
 		label.setTotalAbsences(absences);
 		label.setTotalLate(lateness);
@@ -172,6 +176,11 @@ public class AnalysisEquation extends VisibleComponent{
 	public void setAbsenceCoef(double absenceCoef) {
 		this.absenceCoef = absenceCoef;
 		setMarkedForUpdate(true);
+	}
+
+
+	public static void setInitializing(boolean b) {
+		initializing = b;
 	}
 
 	

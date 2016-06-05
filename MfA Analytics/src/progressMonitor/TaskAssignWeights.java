@@ -9,9 +9,11 @@ import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import dataStructures.AnalysisEquation;
+import dataStructures.HolisticDataDisplay;
 import dataStructures.PD;
 import dataStructures.Teacher;
 import ui.RecordViewer;
+import ui.UI;
 
 public class TaskAssignWeights extends SwingWorker<Void, Void> {
 
@@ -52,6 +54,8 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 			
 		}
 		Collections.sort(teachers);
+		AnalysisEquation.setInitializing(false);//At this point, AnalysisEquation has collected all attendance data (holistically). It does not need to do it again with PDs
+		HolisticDataDisplay.addTotals(teachers.size(), pds.size());
 		for(PD pd: pds){
 			pd.updateValue(eq);
 			count += 1;
@@ -72,6 +76,8 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 //		taskOutput.append("Done!\n");
 		component.setVisible(false);
 		viewer.setMarkedForUpdate(true);
+
+		
 	}
 
 }

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import dataStructures.AnalysisEquation;
+import dataStructures.HolisticDataDisplay;
 import dataStructures.PD;
 import dataStructures.Teacher;
 import progressMonitor.TaskAssignWeights;
@@ -33,9 +34,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	private ViewerLabel hovered;
 	private InfoBox infoBox;
 	
-	private double averageLateness;
-	private int totalRecords;
-	private double averageAbsences;
+
 
 
 	public RecordViewer(int x, int y) {
@@ -44,9 +43,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		viewing = TEACHERS_VIEW;
 		startIndex = 0;
 		infoBox = new InfoBox(0, VIEWER_HEIGHT);
-		averageLateness = 0;
-		totalRecords = 0;
-		averageAbsences = 0;
+	
 	}
 
 

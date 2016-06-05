@@ -59,8 +59,7 @@ public abstract class VisibleComponent implements Visible {
 	}
 	@Override
 	public final void update(){
-		if(visible) draw();
-		else image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+			draw();
 		setMarkedForUpdate(false);
 	}
 	
@@ -113,6 +112,7 @@ public abstract class VisibleComponent implements Visible {
 	
 	public void setVisible(boolean b){
 		visible = b;
+		setMarkedForUpdate(true);
 	}
 	
 	public boolean isVisible(){

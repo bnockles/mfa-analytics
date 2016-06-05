@@ -20,12 +20,10 @@ public class Teacher extends ViewerLabel{
 
 
 
-
     public Teacher(String ln,String fn){
 		super(ln+", "+fn,0,0);
     	lastName = ln;
         firstName = fn;
-        
        
     }
 

@@ -29,7 +29,9 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 	protected int totalExcused;
 	protected int totalLate;
     private boolean hovered;
+    private int minutesLate;
     private Color highlightColor;
+    private int totalRecords;
     
 	
 	public ViewerLabel(String label, int x, int y) {
@@ -49,6 +51,8 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 		timestamps = new ArrayList<TimelinessRecord>();
 		value = 0;
 		hovered = false;
+		minutesLate = 0;
+		totalRecords = 1;
 	}
 
 	
@@ -139,6 +143,18 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 	}
 	
 	
+	
+	
+	public int getMinutesLate() {
+		return minutesLate;
+	}
+
+
+	public void setMinutesLate(int minutesLate) {
+		this.minutesLate = minutesLate;
+	}
+
+
 	public int getLatePercentage(){
 		return (int)(100*(double)totalLate/totalAttendance);
 	}
@@ -152,5 +168,17 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 		hovered = b;
 		update();
 	}
+
+
+	public int getTotalRecords() {
+		return totalRecords;
+	}
+
+
+	public void setTotalRecords(int totalRecords) {
+		this.totalRecords = totalRecords;
+	}
+	
+	
 
 }

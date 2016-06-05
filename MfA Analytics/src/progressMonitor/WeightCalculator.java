@@ -6,9 +6,11 @@ import java.util.List;
 
 
 import dataStructures.AnalysisEquation;
+import dataStructures.HolisticDataDisplay;
 import dataStructures.PD;
 import dataStructures.Teacher;
 import ui.RecordViewer;
+import ui.UI;
 
 public class WeightCalculator extends ProgressBar {
 

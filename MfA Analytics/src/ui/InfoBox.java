@@ -30,7 +30,7 @@ public class InfoBox extends VisibleComponent {
 		super(x, y, INFO_BOX_WIDTH, INFO_BOX_HEIGHT);
 		backGroundColor = new Color(255,255,255);
 		foreGroundColor = (Color.black);
-		update();
+//		update();
 	}
 
 	@Override
@@ -40,17 +40,32 @@ public class InfoBox extends VisibleComponent {
 
 		g.setColor(foreGroundColor);
 		int y = y2;
-		int yTardies = y3;
+		String prefix = "";
+		String suffix = "";
+		if(info != null) suffix = "due to lateness ("+ (GuiUtilities.formatTenths(Math.abs(info.getMinutesLate()/info.getTotalRecords())))+" minutes, on average.)";
 		if(info instanceof PD){
 			PD pd = (PD)info;
 			g.drawString(GuiUtilities.shortenStringtoFit(g, pd.getTitle(), INFO_BOX_WIDTH-50), x1, y1);
 			g.drawString(GuiUtilities.shortenStringtoFit(g, pd.getWorkshop()+" workshops and "+pd.getTimestamps().size()+" records total",INFO_BOX_WIDTH-50), x1, y2);
-			y=y3;
-			yTardies = y3+LINE_HEIGHT;
+			y=y2 + LINE_HEIGHT;
+			if(info.getMinutesLate() > 0) {
+				prefix = "The participants of this PD are missing a total of "+info.getMinutesLate()+" minutes of PD";
+			}else{
+				prefix = "The participants of this PD are generally on time. ";
+				suffix = "They are "+ (GuiUtilities.formatTenths(Math.abs(info.getMinutesLate()/info.getTimestamps().size())))+" minutes early, average.";
+			}
+						
 		}else if (info instanceof Teacher){
 			Teacher t = (Teacher)info;
 			g.drawString(t.getFirstName()+" "+t.getLastName(), x1, y1);
 			g.drawString("( out of "+t.getTotalAttendance()+" records)", x2, y1);
+			if(info.getMinutesLate() > 0) {
+				prefix = t.getFirstName()+ " is missing a total of "+info.getMinutesLate()+" minutes of PD";
+			}else{
+				prefix = t.getFirstName()+ "is usually early, about "+ (GuiUtilities.formatTenths(Math.abs(info.getMinutesLate()/info.getTimestamps().size())))+" minutes early, average.";
+				suffix="";
+				
+			}
 		}
 		if(info != null){
 			Stroke currentStroke = g.getStroke();
@@ -72,10 +87,12 @@ public class InfoBox extends VisibleComponent {
 				}
 			}
 			Collections.sort(minutes);
-			g.drawString("Top 5 Tardiness", x1, yTardies);
+			
+			g.drawString(prefix, x1, y+=LINE_HEIGHT);
+			if(!suffix.equals(""))g.drawString(suffix, x1, y+=LINE_HEIGHT);
 			int j = 1;
 			for(int i = minutes.size()-1; i >=0 && j < 6; i--){
-				g.drawString(minutes.get(i).getMinutesLate()+" min late ("+minutes.get(i).getFormattedDate()+")", x1+8, yTardies+LINE_HEIGHT*j);
+				g.drawString(minutes.get(i).getMinutesLate()+" min late ("+minutes.get(i).getFormattedDate()+")", x1+8, y+LINE_HEIGHT*j);
 				j++;
 			}
 			
