@@ -412,6 +412,10 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		
 	}
 
+	public void recalculate() {
+		viewer.recalculate(equation);
+	}
+
 
 	
 }

@@ -52,6 +52,7 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 		}
 		Collections.sort(pds);
 
+		
 		viewer.setMarkedForUpdate(true);
 		return null;
 	}

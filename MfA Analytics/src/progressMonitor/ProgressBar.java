@@ -1,6 +1,7 @@
 package progressMonitor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -37,10 +38,11 @@ PropertyChangeListener {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int monitorWidth = (int) screenSize.getWidth();
 		int monitorHeight = (int) screenSize.getHeight();
-		int windowWidth = defaultOutput.length()*8;
+		int windowWidth = 200;
 		int windowHeight = 60;
 		
 		setLocation((monitorWidth-windowWidth)/2, (monitorHeight-windowHeight)/2);
+		setBackground(Color.white);
 		setUndecorated(true);
 
 		progressBar = new JProgressBar(0, 100);
@@ -59,7 +61,7 @@ PropertyChangeListener {
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(taskOutput, BorderLayout.PAGE_START);
 		panel.add(progressPanel,BorderLayout.CENTER);
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		panel.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 5));
 
 		panel.setOpaque(true); //content panes must be opaque
 		setContentPane(panel);

@@ -76,8 +76,6 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	public void initTeachersAndPDs(AnalysisEquation eq, List<Teacher> tlist, List<PD> pdlist){
 		this.teachers = tlist;
 		this.pds = pdlist;
-		recalculate(eq);
-		setMarkedForUpdate(true);
 	}
 
 	public void setStartIndex(int i){

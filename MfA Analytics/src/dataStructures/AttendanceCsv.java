@@ -21,6 +21,7 @@ import progressMonitor.FileLoader;
 import progressMonitor.ProgressBar;
 import progressMonitor.WeightCalculator;
 import ui.ErrorMessage;
+import ui.RecordViewer;
 import ui.UI;
 
 
@@ -37,14 +38,14 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 	 * 
 	 */
 	private static final long serialVersionUID = 7908632964480728026L;
-	List<TimelinessRecord> allAttendanceRecords;
-	ArrayList<PD> loadedPDs;
-	ArrayList<Teacher> teachers;
-	ArrayList<String> locations;
-	UI ui;
-	FileReader fileReader;
-	ProgressBar component;
-	double total;
+	private List<TimelinessRecord> allAttendanceRecords;
+	private ArrayList<PD> loadedPDs;
+	private ArrayList<Teacher> teachers;
+	private ArrayList<String> locations;
+	private UI ui;
+	private FileReader fileReader;
+	private FileLoader loader;
+	private RecordViewer viewer;
 
 	public final static int FIRST_INDEX = 0;
 	public final static int LAST_INDEX = 1;
@@ -65,13 +66,12 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 	
 	public AttendanceCsv(UI ui, File csvFile, FileLoader loader){
 		allAttendanceRecords = new ArrayList<TimelinessRecord>();
+		this.ui = ui;
 		loadedPDs=new ArrayList<PD>();
 		teachers=new ArrayList<Teacher>();
 		locations=new ArrayList<String>();
-		this.component = loader;
+		this.loader = loader;
 		try {
-			fileReader = new FileReader(csvFile);
-			total = countLines(fileReader);
 			fileReader = new FileReader(csvFile);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -217,7 +217,7 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 
 				
 				count ++;
-				setProgress((int)(count/total*100.0));
+				setProgress(count);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -237,27 +237,17 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 		return null;
 	}
 
-	private int countLines(FileReader reader) {
-		int lines = 0;
-		LineNumberReader  lnr = new LineNumberReader(reader);
-		try {
-			lnr.skip(Long.MAX_VALUE);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		lines =  lnr.getLineNumber() + 1;
-		return lines;
-	}
+
 
 
 	@Override
 	public void done() {
 		Toolkit.getDefaultToolkit().beep();
 //		startButton.setEnabled(true);
-		component.setCursor(null); //turn off the wait cursor
+		loader.setCursor(null); //turn off the wait cursor
 //		taskOutput.append("Done!\n");
-		component.setVisible(false);
+		loader.setVisible(false);
+		ui.recalculate();
 	}
 
 
