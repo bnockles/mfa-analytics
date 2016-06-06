@@ -104,8 +104,9 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		display.add(viewer);
 		display.add(sliders);
 
-		filter = new MinRecordFilter(SPACING+300, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING+HolisticDataDisplay.DATA_HEIGHT + 40);
 		addButtons();
+		
+		filter = new MinRecordFilter(SPACING+300, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING+HolisticDataDisplay.DATA_HEIGHT + 40);
 		viewer.addFilter(filter);
 		setViewerButtonEnabled(false);
 		
@@ -324,18 +325,14 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		}
 
 		
-		CheckBox filterCheckbox = new CheckBox("Include only participants with more than ", SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING+HolisticDataDisplay.DATA_HEIGHT, false, filter);
-		
 		
 		
 
 		display.add(up);
 		display.add(down);
-		display.add(filterCheckbox);
 		
 		allButtons.add(up);
 		allButtons.add(down);
-		allButtons.add(filterCheckbox);
 		
 		ButtonListener listener = new ButtonListener(allButtons);
 		addMouseListener(listener);

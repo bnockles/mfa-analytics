@@ -11,13 +11,15 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import buttons.Action;
+import buttons.CheckBox;
 import ui.UI;
 import ui.ViewerLabel;
 import ui.VisibleComponent;
+import weightEditor.WeightVersusTimeGrid;
 
 public class MinRecordFilter extends VisibleComponent implements Action, Filter, MouseListener {
 
-	public static final int FILTER_WIDTH = 45;
+	public static final int FILTER_WIDTH = 205;
 	public static final int FILTER_HEIGHT = 25;
 	
 	private static final int _ARROW_WIDTH = 20;
@@ -26,10 +28,12 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 	private boolean turnedOn;
 	private int min;
 	private FontMetrics fm;
+	private CheckBox checkbox;
 	
 	public MinRecordFilter(int x, int y){
 		super(x,y,FILTER_WIDTH,FILTER_HEIGHT);
 		fm = g.getFontMetrics();
+		checkbox = new CheckBox("Only records exceeding ", 0, 0, false, this);
 		draw();
 	}
 	
@@ -54,9 +58,10 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 		g.fillRect(0, 0, FILTER_WIDTH, FILTER_HEIGHT);
 		g.setColor(foreGroundColor);
 		String s = "" + min;
-		g.drawString(s, 0, FILTER_HEIGHT);
-		g.drawImage(getArrow(true), fm.stringWidth("s"), 0, null);
-		g.drawImage(getArrow(false), fm.stringWidth("s"), FILTER_HEIGHT/2, null);
+		g.drawImage(checkbox.getImage(), checkbox.getX(), checkbox.getY(), null);
+		g.drawString(s, checkbox.getWidth(), FILTER_HEIGHT-8);
+		g.drawImage(getArrow(true), checkbox.getWidth()+ fm.stringWidth("s")+5, 0, null);
+		g.drawImage(getArrow(false), checkbox.getWidth() + fm.stringWidth("s")+5, FILTER_HEIGHT/2, null);
 		
 		
 	}
@@ -84,8 +89,8 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 	public void mouseClicked(MouseEvent e) {
 		int mx = e.getX()-getX();
 		int my = e.getY() - getY();
-		System.out.println(Math.abs(mx-fm.stringWidth(""+min))+ " away from x");
-		if(mx > fm.stringWidth(""+min) && mx < fm.stringWidth(""+min)+_ARROW_WIDTH){
+		int arrowX = checkbox.getWidth() + fm.stringWidth(""+min);
+		if(mx > arrowX && mx < arrowX+_ARROW_WIDTH){
 			if(my > 0 && my < FILTER_HEIGHT/2){
 				//hovering over top arrow
 				min ++;
@@ -95,6 +100,13 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 				min --;
 				setMarkedForUpdate(true);
 			}
+		}
+		else if(mx > 0 && mx < CheckBox.CHECKBOX_LENGTH && my > 0 && my < CheckBox.CHECKBOX_LENGTH){
+			
+			checkbox.act();
+			checkbox.update();
+			update();
+			setMarkedForUpdate(true);
 		}
 	}
 
