@@ -276,7 +276,6 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 	}
 
 	private List<Point> smooth(List<Point> iter, int numberOfIterations) {
-		System.out.println("smoothing "+iter.size()+" points");
 		if(numberOfIterations > 3){
 			return iter;
 		}
@@ -307,7 +306,6 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 				int out = getOut(n,nodes.get(i+1));
 				points.add(new Point(n.getxCoordinate() + out, 
 						n.getyCoordinate() + out * getSlope(n, nodes.get(i+1)), this));
-				System.out.println("Slope between zero and one is "+getSlope(n, nodes.get(i+1)));
 			}else if(i == nodes.size()-1){
 				int out = getOut(nodes.get(i-1), n);
 				Point p = (new Point(n.getxCoordinate() - out, 

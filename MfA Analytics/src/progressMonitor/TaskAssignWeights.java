@@ -74,7 +74,6 @@ public class TaskAssignWeights extends SwingWorker<Void, Void> {
 
 	@Override
 	public void done() {
-		Toolkit.getDefaultToolkit().beep();
 //		startButton.setEnabled(true);
 		component.setCursor(null); //turn off the wait cursor
 //		taskOutput.append("Done!\n");

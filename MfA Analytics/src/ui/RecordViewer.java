@@ -69,10 +69,10 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	public void draw() {
 		g.setColor(backGroundColor);
 		g.fillRoundRect(1, 1, VIEWER_WIDTH-2, VIEWER_HEIGHT-2,8,8);
-		if(viewing == TEACHERS_VIEW && teachers != null){
-			drawObjects(teachers);
-		}else if(viewing == PDS_VIEW && pds != null){
-			drawObjects(pds);
+		if(viewing == TEACHERS_VIEW && shownTeachers != null){
+			drawObjects(shownTeachers);
+		}else if(viewing == PDS_VIEW && shownPds != null){
+			drawObjects(shownPds);
 		}else{
 			g.setColor(foreGroundColor);
 			g.drawString("No data has been loaded", 5, 30);
@@ -106,7 +106,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		shownPds = new ArrayList<PD>();
 		hiddenTeachers = new ArrayList<Teacher>();
 		hiddenPds = new ArrayList<PD>();
-		if(filtering){
+		if(filtering && teachers != null){
 			for(Teacher t : teachers){
 				boolean shown = true;
 				for(Filter f: filters){
@@ -116,13 +116,19 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 				else hiddenTeachers.add(t);
 			}
 			for(PD pd : pds){
-				
+				boolean shown = true;
 				for(Filter f: filters){
-					if(f.isSatisfied(pd))shownPds.add(pd);
-					else hiddenPds.add(pd);
+					if(!f.isSatisfied(pd))shown = false;
 				}
+				if(shown)shownPds.add(pd);
+				else hiddenPds.add(pd);
 			}
+		}else{
+			shownTeachers = teachers;
+			shownPds = pds;
 		}
+		startIndex = 0;
+		setMarkedForUpdate(true);
 	}
 	
 	public void initTeachersAndPDs(AnalysisEquation eq, List<Teacher> tlist, List<PD> pdlist){
@@ -217,13 +223,13 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 
 		if(mx > 0 && mx < VIEWER_WIDTH && my > 0 && my < VIEWER_HEIGHT){
 			int itemNumber = my/LABEL_SPACE;
-			if(viewing == TEACHERS_VIEW && teachers != null){
+			if(viewing == TEACHERS_VIEW && shownTeachers != null){
 				if(shownTeachers.size() <= startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
-				else return teachers.get(startIndex + itemNumber);
+				else return shownTeachers.get(startIndex + itemNumber);
 			}
-			if(viewing == PDS_VIEW && pds != null){
-				if(pds.size() <= startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
-				else return pds.get(startIndex + itemNumber);
+			if(viewing == PDS_VIEW && shownPds != null){
+				if(shownPds.size() <= startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
+				else return shownPds.get(startIndex + itemNumber);
 			}else return null;
 
 		}else {
@@ -245,5 +251,6 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	public void setFiltering(boolean on) {
 		filtering = on;
 	}
+
 
 }

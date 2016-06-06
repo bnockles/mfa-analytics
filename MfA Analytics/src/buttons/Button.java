@@ -141,4 +141,8 @@ public class Button extends HoverComponent implements ActOnClick{
 		setMarkedForUpdate(true);
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 }

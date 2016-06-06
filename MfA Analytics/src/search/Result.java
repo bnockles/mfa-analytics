@@ -49,7 +49,7 @@ public class Result extends HoverComponent {
 		g.setColor(backGroundColor);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setColor(foreGroundColor);
-		g.drawString(description, 5, RESULT_HEIGHT-2);
+		g.drawString(description, 5, RESULT_HEIGHT-5);
 	}
 
 

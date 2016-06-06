@@ -52,7 +52,7 @@ public class InfoBox extends VisibleComponent {
 			g.drawString(GuiUtilities.shortenStringtoFit(g, pd.getWorkshop()+" workshops and "+pd.getTimestamps().size()+" records total",INFO_BOX_WIDTH-50), x1, y2);
 			y=y2 + LINE_HEIGHT;
 			if(info.getMinutesLate() > 0) {
-				prefix = "The participants of this PD are missing a total of "+info.getMinutesLate()+" minutes of PD";
+				prefix = "The participants of this PD are missing a total of "+info.getMinutesLate()+" minutes";
 			}else{
 				prefix = "The participants of this PD are generally on time. ";
 				suffix = "They are "+ (GuiUtilities.formatTenths(Math.abs(info.getMinutesLate()/info.getTimestamps().size())))+" minutes early, average.";
@@ -63,7 +63,7 @@ public class InfoBox extends VisibleComponent {
 			g.drawString(t.getFirstName()+" "+t.getLastName(), x1, y1);
 			g.drawString("( out of "+t.getTotalAttendance()+" records)", x2, y1);
 			if(info.getMinutesLate() > 0) {
-				prefix = t.getFirstName()+ " is missing a total of "+info.getMinutesLate()+" minutes of PD";
+				prefix = t.getFirstName()+ " is missing a total of "+info.getMinutesLate()+" minutes";
 			}else{
 				prefix = t.getFirstName()+ "is usually early, about "+ (GuiUtilities.formatTenths(Math.abs(info.getMinutesLate()/info.getTimestamps().size())))+" minutes early, average.";
 				suffix="";

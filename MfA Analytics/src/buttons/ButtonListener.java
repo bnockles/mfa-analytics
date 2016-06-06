@@ -70,7 +70,7 @@ public class ButtonListener implements MouseListener, MouseMotionListener {
 		for(ActOnClick b: buttons){
 			if(b instanceof Button){
 				Button button  = (Button)b; 
-				if(button.isVisible() && 
+				if(button.isEnabled() && button.isVisible() && 
 						e.getX() > button.getX() && e.getX() < button.getX()+button.getWidth() &&
 						e.getY() > button.getY() && e. getY() < button.getY() + button.getHeight()){
 					button.setHover(true);

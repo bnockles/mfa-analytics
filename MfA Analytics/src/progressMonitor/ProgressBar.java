@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
+import ui.ViewerLabel;
+
 public abstract class ProgressBar extends JFrame implements
 PropertyChangeListener {
 
@@ -50,15 +52,19 @@ PropertyChangeListener {
 		progressBar.setStringPainted(true);
 
 		taskOutput = new JLabel(defaultOutput);
+		taskOutput.setBackground(ViewerLabel.LABEL_COLOR);
 	
 		
 		
 		setPreferredSize(new Dimension(windowWidth,windowHeight));
 
 		JPanel progressPanel = new JPanel();
+		progressPanel.setBackground(ViewerLabel.LABEL_COLOR);
+		
 		progressPanel.add(progressBar);
 
 		JPanel panel = new JPanel(new BorderLayout());
+		panel.setBackground(ViewerLabel.LABEL_COLOR);
 		panel.add(taskOutput, BorderLayout.PAGE_START);
 		panel.add(progressPanel,BorderLayout.CENTER);
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 5, 5, 5));

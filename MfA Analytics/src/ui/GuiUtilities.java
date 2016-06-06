@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.BasicStroke;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -43,11 +44,16 @@ public class GuiUtilities {
 	}
 	
 	public static void drawSigma(Graphics2D g, int i, int j, int h) {
-		g.drawLine(i+h/3, j+h/2, i, j);//center to top right
-		g.drawLine(i+h/3, j+h/2, i, j+h);//center to bottom left
-		g.drawLine(i, j, i+2*h/3, j);//top
 		g.drawLine(i, j+h, i+2*h/3, j+h);//bottom
+		g.drawLine(i, j+h-2, i+2*h/3, j+h-2);//bottom (emphasis)
+		g.drawLine(i+h/3, j+h/2, i, j);//center to top right
+		g.drawLine(i+h/3+3, j+h/2, i+3, j);//center to top right (emphasis)
+		g.drawLine(i+h/3, j+h/2, i, j+h);//center to bottom left
+		g.drawLine(i+h/3+3, j+h/2, i, j+h-2);//center to bottom left
+		g.drawLine(i, j, i+2*h/3, j);//top
+		g.drawLine(i+2*h/3-3, j, i+2*h/3, j+h/5);//top right serif
 		g.drawLine(i+2*h/3, j, i+2*h/3, j+h/5);//top right serif
+		g.drawLine(i+2*h/3-3, j+h, i+2*h/3, j+h-h/5);//bottom right serif
 		g.drawLine(i+2*h/3, j+h, i+2*h/3, j+h-h/5);//bottom right serif
 	}
 	public static void centerIcon(Graphics2D g, Image icon, int width, int height) {

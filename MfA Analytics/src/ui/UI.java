@@ -51,6 +51,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 	public static final Color ACCENT_COLOR= new Color(80,215,230);
 	public static final Color DISABLED_COLOR= new Color(180,180,180);
 	public static final Color HIGHLIGHT_COLOR = new Color(200,200,255);
+	public static final Color DARK_HIGHLIGHT_COLOR = new Color(100,100,205);
 	
 	private AttendanceCsv csv;
 	private SearchWindow searchWindow;
@@ -84,14 +85,15 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 	private static final String _PDS_MODE_TEXT = "PDs";
 	private static final String _TEACHERS_MODE_TEXT = "Teachers";
 	
+	public static UI runningUI;
 	
 	public UI(){
 		applySettings();//display the JFrame the way I want it
 		display = new ArrayList<Visible>();
 		refresh = true;
 		grid = new WeightVersusTimeGrid(_GRID_X_MARGIN+5, _GRID_Y_MARGIN+5);
-		equation = new AnalysisEquation(SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
-		summaryData = new HolisticDataDisplay(SPACING+100, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING);
+		equation = new AnalysisEquation(SPACING+MinRecordFilter.FILTER_WIDTH, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING, grid);
+		summaryData = new HolisticDataDisplay(SPACING+MinRecordFilter.FILTER_WIDTH, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING);
 		viewer = new RecordViewer(WIDTH-_VIEWER_MARGIN_FROM_RIGHT, _GRID_Y_MARGIN);
 		summaryData.setVisible(false);
 		sliders = new SliderComponent(SPACING, _GRID_Y_MARGIN, equation);
@@ -106,7 +108,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 
 		addButtons();
 		
-		filter = new MinRecordFilter(SPACING+300, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING+HolisticDataDisplay.DATA_HEIGHT + 40);
+		filter = new MinRecordFilter(SPACING, _GRID_Y_MARGIN+WeightVersusTimeGrid.PIXEL_HEIGHT+SPACING);
 		viewer.addFilter(filter);
 		setViewerButtonEnabled(false);
 		
@@ -119,6 +121,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		addMouseMotionListener(viewer);
 		addMouseMotionListener(sliders);
 		addMouseListener(filter);
+		addMouseMotionListener(filter);
 		
 		Timer timer = new Timer(30, new ActionListener() {
 
@@ -130,7 +133,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_ARGB);
 		repaint();
 		setVisible(true);		
-
+		runningUI = this;
 	}
 	
 	private BufferedImage getArrow(boolean up){

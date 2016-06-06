@@ -17,6 +17,7 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 
 	public static final int LABEL_WIDTH = 410;
 	public static final int LABEL_HEIGHT = 40;
+	public static final Color LABEL_COLOR = new Color(240,255,255);
 	
 	private static final int _MARGIN = 5;
 	
@@ -36,7 +37,7 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 	
 	public ViewerLabel(String label, int x, int y) {
 		super(x, y, LABEL_WIDTH, LABEL_HEIGHT);
-		backGroundColor = new Color(240,255,255);
+		backGroundColor = LABEL_COLOR;
 		highlightColor =  Color.white;
 		foreGroundColor = Color.black;
 		InputStream is = VisibleComponent.class.getResourceAsStream("/DayRoman.ttf");
