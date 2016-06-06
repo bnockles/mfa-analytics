@@ -55,8 +55,10 @@ public class CheckBox extends VisibleComponent implements ActOnClick{
 
 	@Override
 	public void act() {
+		//handles adding/removing check
 		checked = !checked;
 		setMarkedForUpdate(true);
+		//acts
 		action.act();
 	}
 

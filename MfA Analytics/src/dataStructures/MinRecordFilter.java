@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 
 import buttons.Action;
 import buttons.CheckBox;
+import ui.RecordViewer;
 import ui.UI;
 import ui.ViewerLabel;
 import ui.VisibleComponent;
@@ -29,6 +30,7 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 	private int min;
 	private FontMetrics fm;
 	private CheckBox checkbox;
+	private RecordViewer viewer;
 	
 	public MinRecordFilter(int x, int y){
 		super(x,y,FILTER_WIDTH,FILTER_HEIGHT);
@@ -50,6 +52,7 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 	@Override
 	public void act() {
 		turnedOn = !turnedOn;
+		viewer.setFiltering(turnedOn);
 	}
 
 	@Override
@@ -132,6 +135,11 @@ public class MinRecordFilter extends VisibleComponent implements Action, Filter,
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setParent(RecordViewer rv) {
+		this.viewer = rv;
 	}
 
 }

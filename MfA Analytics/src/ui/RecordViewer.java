@@ -31,12 +31,18 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 
 	private List<Teacher> teachers;
 	private List<PD> pds;
+	
+	private List<Teacher> shownTeachers;
+	private List<PD> shownPds;
+	private List<Teacher> hiddenTeachers;
+	private List<PD> hiddenPds;
+	
 	private int viewing;
 	private int startIndex;
 	private ViewerLabel hovered;
 	private InfoBox infoBox;
-	private CheckBox filter;
 	private List<Filter> filters;
+	private boolean filtering;
 
 
 
@@ -47,10 +53,12 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		startIndex = 0;
 		infoBox = new InfoBox(0, VIEWER_HEIGHT);
 		filters = new ArrayList<Filter>();
+		filtering = false;
 	}
 
 	public void addFilter(Filter f){
 		filters.add(f);
+		f.setParent(this);
 	}
 	
 	public void removeFilter(Filter f){
@@ -93,10 +101,35 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 		}
 	}
 
+	public void updateShownHidden(){
+		shownTeachers = new ArrayList<Teacher>();
+		shownPds = new ArrayList<PD>();
+		hiddenTeachers = new ArrayList<Teacher>();
+		hiddenPds = new ArrayList<PD>();
+		if(filtering){
+			for(Teacher t : teachers){
+				boolean shown = true;
+				for(Filter f: filters){
+					if(!f.isSatisfied(t))shown = false;
+				}
+				if(shown)shownTeachers.add(t);
+				else hiddenTeachers.add(t);
+			}
+			for(PD pd : pds){
+				
+				for(Filter f: filters){
+					if(f.isSatisfied(pd))shownPds.add(pd);
+					else hiddenPds.add(pd);
+				}
+			}
+		}
+	}
+	
 	public void initTeachersAndPDs(AnalysisEquation eq, List<Teacher> tlist, List<PD> pdlist){
 		this.teachers = tlist;
 		this.pds = pdlist;
-
+		updateShownHidden();
+		
 	}
 
 	public void setStartIndex(int i){
@@ -149,18 +182,43 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 				infoBox.setInfo(null);
 				hovered = null;
 				setMarkedForUpdate(true);
-				if(filter != null) filter.setMarkedForUpdate(true);
 			}
 		}
 	}
 
 
+//	private ViewerLabel determineHoveredLabel(int mx, int my) {
+//
+//		if(mx > 0 && mx < VIEWER_WIDTH && my > 0 && my < VIEWER_HEIGHT){
+//			int itemNumber = my/LABEL_SPACE;
+//			if(viewing == TEACHERS_VIEW && teachers != null){
+//				if(teachers.size() <= startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
+//				else return teachers.get(startIndex + itemNumber);
+//			}
+//			if(viewing == PDS_VIEW && pds != null){
+//				if(pds.size() <= startIndex + itemNumber  || itemNumber > VIEWER_ROWS-1)return null;
+//				else return pds.get(startIndex + itemNumber);
+//			}else return null;
+//
+//		}else {
+//			return null;
+//		}
+//	}
+	
+	
+	/**
+	 * The following method was written to work with filtering, to return to the version without filters, use
+	 * the commented out method above
+	 * @param mx
+	 * @param my
+	 * @return
+	 */
 	private ViewerLabel determineHoveredLabel(int mx, int my) {
 
 		if(mx > 0 && mx < VIEWER_WIDTH && my > 0 && my < VIEWER_HEIGHT){
 			int itemNumber = my/LABEL_SPACE;
 			if(viewing == TEACHERS_VIEW && teachers != null){
-				if(teachers.size() <= startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
+				if(shownTeachers.size() <= startIndex + itemNumber || itemNumber > VIEWER_ROWS-1)return null;
 				else return teachers.get(startIndex + itemNumber);
 			}
 			if(viewing == PDS_VIEW && pds != null){
@@ -182,6 +240,10 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	
 	public int getMode(){
 		return viewing;
+	}
+
+	public void setFiltering(boolean on) {
+		filtering = on;
 	}
 
 }
