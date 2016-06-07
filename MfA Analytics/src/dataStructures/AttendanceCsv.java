@@ -46,6 +46,7 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 	private FileReader fileReader;
 	private FileLoader loader;
 	private RecordViewer viewer;
+	private int totalRecords;
 
 	public final static int FIRST_INDEX = 0;
 	public final static int LAST_INDEX = 1;
@@ -64,13 +65,14 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 
 
 	
-	public AttendanceCsv(UI ui, File csvFile, FileLoader loader){
+	public AttendanceCsv(UI ui, File csvFile, FileLoader loader, int totalRecords){
 		allAttendanceRecords = new ArrayList<TimelinessRecord>();
 		this.ui = ui;
 		loadedPDs=new ArrayList<PD>();
 		teachers=new ArrayList<Teacher>();
 		locations=new ArrayList<String>();
 		this.loader = loader;
+		this.totalRecords = totalRecords;
 		try {
 			fileReader = new FileReader(csvFile);
 		} catch (FileNotFoundException e) {
@@ -141,7 +143,7 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 	protected Void doInBackground() throws Exception {
 		
 	
-		int count = 0;
+		double count = 0;
 		
 		BufferedReader br = null;
 		String line = "";
@@ -217,7 +219,7 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 
 				
 				count ++;
-				setProgress(count);
+				setProgress((int) (count/totalRecords*100));
 			}
 
 		} catch (FileNotFoundException e) {

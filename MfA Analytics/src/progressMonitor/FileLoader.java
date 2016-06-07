@@ -40,7 +40,7 @@ public class FileLoader extends ProgressBar {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		this.task = new AttendanceCsv(ui, file, this);
+		this.task = new AttendanceCsv(ui, file, this, numberOfRecords);
 		start(task);
 		// TODO Auto-generated constructor stub
 	}
@@ -66,8 +66,8 @@ public class FileLoader extends ProgressBar {
 	public void propertyChange(PropertyChangeEvent evt) {
 		if ("progress" == evt.getPropertyName()) {
 			int progress = (Integer) evt.getNewValue();
-			taskOutput.setText("Read "+progress+"/"+numberOfRecords+" records.");
-			progressBar.setValue((int)((double)progress/numberOfRecords * 100));
+			taskOutput.setText("Read "+(int)((progress/100.0)*numberOfRecords)+"/"+numberOfRecords+" records.");
+			progressBar.setValue((int)((double)progress));
 		} 
 	}
 

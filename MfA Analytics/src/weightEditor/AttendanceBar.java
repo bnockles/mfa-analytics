@@ -45,15 +45,20 @@ public class AttendanceBar extends VisibleComponent {
 			double value = (double)count/total;
 			pixelHeight = (int) (value*grid.getYAxis());
 			setY(grid.getXAxis()-pixelHeight);
-			image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = image.createGraphics();
-			Color fill =(hovered)?lightBarColors[colorIndex%barColors.length]:barColors[colorIndex%barColors.length];
-			g.setColor(fill);
-			g.fillRect(3, 0, pixelWidth-6, pixelHeight);
-			BasicStroke s = new BasicStroke(3);
-			g.setStroke(s);
-			g.setColor(Color.black);
-			g.drawRect(3, 0, pixelWidth-6, pixelHeight);
+			if(pixelWidth>0 && pixelHeight > 0){
+				image = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g = image.createGraphics();
+				Color fill =(hovered)?lightBarColors[colorIndex%barColors.length]:barColors[colorIndex%barColors.length];
+				g.setColor(fill);
+				g.fillRect(3, 0, pixelWidth-6, pixelHeight);
+				BasicStroke s = new BasicStroke(3);
+				g.setStroke(s);
+				g.setColor(Color.black);
+				g.drawRect(3, 0, pixelWidth-6, pixelHeight);
+			}else{
+				image = null;
+			}
+			
 		}else{
 			
 			image = null;

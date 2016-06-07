@@ -161,7 +161,7 @@ public class WeightVersusTimeGrid extends VisibleComponent implements MouseMotio
 			g.drawImage(backgroundImage, 0, 0, null);
 			for(AttendanceBar bar : bars){
 				bar.update();
-				g.drawImage(bar.getImage(), bar.getX(), bar.getY(), null);
+				if(bar.getImage() != null) g.drawImage(bar.getImage(), bar.getX(), bar.getY(), null);
 				drawBarLabel();
 			}
 		}
