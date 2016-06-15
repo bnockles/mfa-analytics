@@ -4,7 +4,7 @@ package ui;
 
 import dataStructures.CsvLoader;
 
-public class Main {
+public class MfAAnalytics {
 
 	public static void main(String[] args) {
 		UI ui = new UI();

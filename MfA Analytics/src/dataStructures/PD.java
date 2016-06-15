@@ -22,6 +22,7 @@ public class PD extends ViewerLabel{
 	int numberOfWorkshops;
 	ArrayList<Date> dates;//for multiple session PDs
 	ArrayList<String> locations;
+	private int numberOfParticipants;
 	
 	
 	/**
@@ -33,6 +34,7 @@ public class PD extends ViewerLabel{
 	 */
 	public PD(String name, int number, Date date,  String location){
 		super(name,0,0);
+		numberOfParticipants = 0;
 		title = name;
 		dates = new ArrayList<Date>();
 		locations = new ArrayList<String>();
@@ -91,6 +93,20 @@ public class PD extends ViewerLabel{
 			this.numberOfWorkshops = workshopNumber;
 		}
 		
+	}
+
+	public void countParticipants() {
+		List<String> distinctNames = new ArrayList<String>();
+		for(TimelinessRecord t: timestamps){
+			if(!distinctNames.contains(t.getFirstName()+" "+t.getLastName())){
+				distinctNames.add(t.getFirstName()+" "+t.getLastName());
+			}
+		}
+		numberOfParticipants= distinctNames.size();
+	}
+	
+	public int getNumberOfParticipants(){
+		return numberOfParticipants;
 	}
 
 

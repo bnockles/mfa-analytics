@@ -292,7 +292,7 @@ public class UI extends JFrame implements ComponentListener, FocusListener{
 		Image open=null;
 		try {
 			open = ImageIO.read(is);
-			Button openButton = new ImageTextButton("Open",open.getScaledInstance(34, 34, Image.SCALE_SMOOTH), 10, _BUTTON_Y-10, 120, _BUTTON_HEIGHT+10, new Action() {
+			Button openButton = new ImageTextButton("Open",open.getScaledInstance(34, 34, Image.SCALE_SMOOTH), 25, _BUTTON_Y-10, 120, _BUTTON_HEIGHT+10, new Action() {
 				
 				@Override
 				public void act() {

@@ -21,7 +21,7 @@ public abstract class ViewerLabel extends VisibleComponent implements Comparable
 	
 	private static final int _MARGIN = 5;
 	
-    private ArrayList<TimelinessRecord> timestamps;
+    protected ArrayList<TimelinessRecord> timestamps;
 	private String displayNameString;//stays the same
 	private String infoString;//is updated when recalculated
 	protected double value;

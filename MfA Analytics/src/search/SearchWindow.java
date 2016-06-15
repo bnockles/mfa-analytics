@@ -83,7 +83,6 @@ public class SearchWindow extends JFrame implements MouseListener, MouseMotionLi
 	
 	
 	protected void search(String text) {
-		System.out.println("Searching: "+text);
 		if(text.length() > 2){
 			for(int i = 0 ; i < ui.getCsv().getTeachers().size(); i++){
 				Teacher t = ui.getCsv().getTeachers().get(i);

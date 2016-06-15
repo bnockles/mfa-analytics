@@ -83,7 +83,7 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 
 
 
-	private Teacher loadAndAddNewTeacehr(String[] row) {
+	private Teacher loadAndAddNewTeacher(String[] row) {
 		Teacher t = new Teacher(row[LAST_INDEX].replaceAll("\"", ""),row[FIRST_INDEX].replaceAll("\"", ""));
 		Teacher alreadyLoaded=t;
 		boolean wasLoaded = false;
@@ -173,7 +173,7 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 					//Start by checking whether or not the PD has already been loaded	
 					
 					PD rowPD = loadAndAddNewPD(row, date);
-					Teacher rowTeacher = loadAndAddNewTeacehr(row);
+					Teacher rowTeacher = loadAndAddNewTeacher(row);
 					
 					//Start by checking whether or not the location has already been loaded
 					String location = row[6].replaceAll("\"", "");
@@ -235,6 +235,9 @@ public class AttendanceCsv extends SwingWorker<Void, Void> implements Serializab
 					e.printStackTrace();
 				}
 			}
+		}
+		for(PD pd: loadedPDs){
+			pd.countParticipants();
 		}
 		return null;
 	}

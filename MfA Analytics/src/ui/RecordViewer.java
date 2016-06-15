@@ -157,7 +157,7 @@ public class RecordViewer extends VisibleComponent implements MouseMotionListene
 	
 	public void recalculate(AnalysisEquation eq) {
 
-		new WeightCalculator(this, teachers, pds, eq, filters);
+		new WeightCalculator(this, shownTeachers, shownPds, eq, filters);
 
 	}
 

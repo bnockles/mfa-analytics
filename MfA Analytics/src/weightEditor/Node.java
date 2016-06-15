@@ -2,6 +2,7 @@ package weightEditor;
 
 import java.awt.Color;
 
+import dataStructures.AnalysisEquation;
 import ui.VisibleComponent;
 
 public class Node extends Point{
@@ -50,7 +51,7 @@ public class Node extends Point{
 
 	public void setXYCoordinates(double x, double y){
 		if(!freezeX)setxCoordinate(x);
-		setyCoordinate(y);
+		if(y<AnalysisEquation.MAX_COEF && y>AnalysisEquation.MIN_COEF)setyCoordinate(y);
 	}
 	
 	/**
