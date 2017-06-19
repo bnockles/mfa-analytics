@@ -56,7 +56,7 @@ public class FileLoader extends ProgressBar {
 			e.printStackTrace();
 		}
 		lines =  lnr.getLineNumber() + 1;
-	        setMaximum(lines);
+//	        setMaximum(lines);
 		return lines;
 	}
 
